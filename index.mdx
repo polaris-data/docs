@@ -1,18 +1,23 @@
 ---
 title: "Polaris docs"
+sidebarTitle: "Overview"
 description: "Docs for accessing Polaris market data through snapshots, REST endpoints, and SDKs."
 ---
 
 Polaris is a market data platform for frontier venues across crypto derivatives, RWAs, and compute markets. It captures exchange-native events at the source and exposes both raw payloads and standardised schemas so you can build research and production pipelines without rewriting venue-specific logic.
 
-Use these docs to choose a market, authenticate your requests, and download your first dataset.
+If you are new to Polaris, do not start by reading every page. Follow one path: get access, choose a market, download one file, then branch into the schema or endpoint docs you actually need.
 
 <Card title="Quickstart" icon="rocket" href="/quickstart">
   Go from API key to your first snapshot download.
 </Card>
 
-<Card title="API reference" icon="braces" href="/reference/api-reference">
-  Review the main REST endpoints and shared request patterns.
+<Card title="Choose the right data" icon="git-branch" href="/guides/choose-the-right-data">
+  Compare snapshots, REST endpoints, standardised formats, and raw payloads.
+</Card>
+
+<Card title="Connecting" icon="key-round" href="/guides/connect">
+  Set up authentication and reuse the same API key across surfaces.
 </Card>
 
 <Card title="Catalog" icon="database" href="/reference/catalog">
@@ -23,13 +28,30 @@ Use these docs to choose a market, authenticate your requests, and download your
   List and download canonical daily historical files.
 </Card>
 
+<Card title="API overview" icon="braces" href="/reference/api-reference">
+  Review the main REST surfaces and jump into smaller endpoint pages.
+</Card>
+
 <Card title="Standardised formats" icon="layers" href="/schemas/standardised-formats">
   Understand the cross-venue event envelope used across Polaris datasets.
 </Card>
 
-## What you can do with Polaris
+## Start here
+
+1. Run the [Quickstart](/quickstart).
+2. Confirm auth in [Connecting](/guides/connect).
+3. Validate market coverage in [Catalog](/reference/catalog).
+4. Choose between [Snapshots](/reference/snapshots) and the [API](/reference/api-reference).
+
+## What Polaris helps you do
 
 - Query recent trades, events, and OHLCV over REST.
 - Download bulk historical snapshots for standardized datasets.
 - Inspect raw exchange-native payloads when you need replayability or custom parsing.
 - Use the same API key across the REST API and SDKs.
+
+## Next steps
+
+- Open [Quickstart](/quickstart) if you want the fastest path to first data.
+- Open [Choose the right data](/guides/choose-the-right-data) if you are not sure which surface to use.
+- Open [Market coverage](/markets/market-coverage) if you want a high-level view of supported venue categories.

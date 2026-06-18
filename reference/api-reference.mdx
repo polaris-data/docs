@@ -1,89 +1,44 @@
 ---
-title: "API reference"
-description: "REST endpoints for market data, metadata discovery, and snapshot downloads."
+title: "API overview"
+sidebarTitle: "API Overview"
+description: "Choose the right Polaris REST endpoint and jump into smaller endpoint-specific reference pages."
 ---
 
-Polaris provides REST endpoints for market data access at `https://api.polaris.supply`.
+Polaris provides REST endpoints at `https://api.polaris.supply`. You do not need to memorize the whole surface at once. Choose the endpoint family that matches your task, then read the smaller page for that endpoint.
 
-## Authentication
+## Start with the right endpoint
 
-Pass your API key in the `Authorization` header as a bearer token:
+| Task | Page |
+| --- | --- |
+| Authenticate requests and understand shared request patterns | [Authentication](/reference/authentication) |
+| Discover valid exchanges, assets, and time bounds | [Catalog](/reference/catalog) |
+| Download bulk historical standardized files | [Snapshots](/reference/snapshots) |
+| Query recent normalized trade events | [Trades API](/reference/trades-api) |
+| Query recent mixed event streams | [Events API](/reference/events-api) |
+| Query interval-based candles | [OHLCV API](/reference/ohlcv-api) |
+| Query exchange-native payloads | [Raw API](/reference/raw-api) |
 
-```http
-Authorization: Bearer pk_live_your_key
-```
+## Endpoint families
 
-If you want to validate access quickly, use the [Snapshots](/reference/snapshots) workflow to download one historical file.
+### Metadata
 
-## Data endpoints
+- `GET /catalog`
 
-### `GET /trades`
+### Historical files
 
-Normalized trade events only.
+- `GET /snapshots`
+- `GET /snapshots/download`
 
-- Required: `exchange`, `asset`
-- Optional: `limit`, `cursor`, `from`, `to`
-- No-key requests are limited to the latest 6 hours
+### Recent query endpoints
 
-### `GET /events`
+- `GET /trades`
+- `GET /events`
+- `GET /ohlcv`
+- `GET /raw`
 
-Mixed event types including trades, bars, datapoints, and order book updates.
+## Common response pattern
 
-- Required: `exchange`, `asset`
-- Optional: `limit`, `cursor`, `from`, `to`
-- No-key requests are limited to the latest 6 hours
-
-### `GET /ohlcv`
-
-Aggregated OHLCV bars.
-
-- Required: `exchange`, `asset`, `interval`
-- Optional: `format=tradingview`, `limit`, `cursor`, `from`, `to`
-- No-key requests are limited to the latest 6 hours and latest 50 bars
-
-### `GET /raw`
-
-Raw exchange-native payloads.
-
-- Required: `exchange`, `asset`
-- Optional: `limit`, `cursor`, `from`, `to`
-- Requires an API key
-
-### `GET /snapshots`
-
-Canonical daily historical files for standardised datasets.
-
-- Required: `exchange`, `asset`
-- Optional: `from`, `to`, `limit`, `cursor`
-- Default `limit` is `200`
-- Maximum `limit` is `1000`
-
-### `GET /snapshots/download`
-
-Download a single snapshot file by key.
-
-- Required: `key`
-- Optional: `filename`
-- Successful requests return `302`, so clients should follow redirects
-
-## Metadata endpoint
-
-### `GET /catalog`
-
-Use catalog to discover exchanges, assets, dataset categories, access metadata, and historical bounds.
-
-- Optional: `exchange`, `asset`
-- `asset` requires `exchange`
-
-## Common parameters
-
-- `from` and `to`: accepted by `/snapshots` without auth; other historical data queries usually require bearer auth
-- `limit`: page size; defaults and maximums vary by endpoint
-- `cursor`: opaque pagination token returned by the previous response
-
-## Pagination response
-
-`/trades`, `/events`, `/raw`, and `/ohlcv` return:
+`/trades`, `/events`, `/raw`, and `/ohlcv` return paginated responses:
 
 ```json
 {
@@ -93,18 +48,14 @@ Use catalog to discover exchanges, assets, dataset categories, access metadata, 
 }
 ```
 
-## Examples
+## Recommended reading order
 
-No API key:
+1. [Authentication](/reference/authentication)
+2. [Catalog](/reference/catalog)
+3. [Snapshots](/reference/snapshots) or one of the recent query endpoint pages
 
-```bash
-curl "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&limit=100"
-```
+## Next steps
 
-With API key and explicit time bounds:
-
-```bash
-curl \
-  -H "Authorization: Bearer pk_live_your_key" \
-  "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&from=2024-01-01T00:00:00Z&to=2024-01-01T01:00:00Z&limit=100"
-```
+- Read [Authentication](/reference/authentication) if you are about to make your first request.
+- Read [Choose the right data](/guides/choose-the-right-data) if you are deciding between snapshots and direct API queries.
+- Read [Trades API](/reference/trades-api) if you want the simplest recent-data endpoint.

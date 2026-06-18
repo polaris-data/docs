@@ -1,0 +1,42 @@
+---
+title: "Events API"
+sidebarTitle: "Events API"
+description: "Query mixed normalized event streams, including trades, bars, datapoints, and order book events."
+---
+
+Use `GET /events` when you want more than just trade executions. This endpoint returns mixed event types in a single normalized stream.
+
+## Endpoint
+
+`GET /events`
+
+## Request shape
+
+| Parameter | Required | Notes |
+| --- | --- | --- |
+| `exchange` | Yes | Exchange ID |
+| `asset` | Yes | Normalized asset or instrument ID |
+| `limit` | No | Page size |
+| `cursor` | No | Opaque pagination token |
+| `from` | No | Explicit start time; usually requires bearer auth |
+| `to` | No | Explicit end time; usually requires bearer auth |
+
+## Common event types
+
+- `trade`
+- `bar`
+- `datapoint`
+- `orderbook`
+
+## Access behavior
+
+| Mode | Behavior |
+| --- | --- |
+| No API key | Limited to the latest 6 hours |
+| With API key | Supports broader historical queries and custom time bounds |
+
+## Next steps
+
+- Read [Market events](/schemas/market-events) for datapoint semantics and common labels.
+- Read [OHLCV API](/reference/ohlcv-api) if you only need candles.
+- Read [Trades API](/reference/trades-api) if you only need executions.

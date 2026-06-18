@@ -11,29 +11,31 @@
   "navigation": {
     "pages": [
       {
-        "group": "Overview",
+        "group": "Start Here",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          "guides/connect",
+          "guides/choose-the-right-data"
         ]
       },
       {
-        "group": "Guides",
-        "pages": [
-          "guides/getting-started",
-          "guides/connect"
-        ]
-      },
-      {
-        "group": "Reference",
+        "group": "Access Data",
+        "expanded": false,
         "pages": [
           "reference/api-reference",
+          "reference/authentication",
           "reference/catalog",
-          "reference/snapshots"
+          "reference/snapshots",
+          "reference/trades-api",
+          "reference/events-api",
+          "reference/ohlcv-api",
+          "reference/raw-api"
         ]
       },
       {
         "group": "Schemas",
+        "expanded": false,
         "pages": [
           "schemas/standardised-formats",
           "schemas/trades",
@@ -44,24 +46,22 @@
       },
       {
         "group": "SDKs",
+        "expanded": false,
         "pages": [
           "sdks/python",
           "sdks/rust"
+        ]
+      },
+      {
+        "group": "Markets",
+        "expanded": false,
+        "pages": [
+          "markets/market-coverage"
         ]
       }
     ],
     "global": {
       "anchors": [
-        {
-          "anchor": "API base",
-          "href": "https://api.polaris.supply",
-          "icon": "globe"
-        },
-        {
-          "anchor": "Status",
-          "href": "https://status.polaris.supply",
-          "icon": "activity"
-        },
         {
           "anchor": "CLI",
           "href": "https://github.com/polaris-data/cli",
@@ -76,10 +76,6 @@
   },
   "navbar": {
     "links": [
-      {
-        "label": "Status",
-        "href": "https://status.polaris.supply"
-      },
       {
         "label": "Support",
         "href": "mailto:hello@polaris.supply"

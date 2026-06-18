@@ -1,0 +1,41 @@
+---
+title: "Raw API"
+sidebarTitle: "Raw API"
+description: "Query exchange-native payloads when you need replayability, audits, or custom parsing."
+---
+
+Use `GET /raw` when you need unmodified exchange-native payloads rather than standardized records.
+
+## Endpoint
+
+`GET /raw`
+
+## Request shape
+
+| Parameter | Required | Notes |
+| --- | --- | --- |
+| `exchange` | Yes | Exchange ID |
+| `asset` | Yes | Market identifier |
+| `limit` | No | Page size |
+| `cursor` | No | Opaque pagination token |
+| `from` | No | Explicit start time |
+| `to` | No | Explicit end time |
+
+## Access behavior
+
+| Mode | Behavior |
+| --- | --- |
+| No API key | Not supported |
+| With API key | Required |
+
+## When to use it
+
+- Replay source messages
+- Audit parser behavior
+- Maintain your own venue-specific normalization
+
+## Next steps
+
+- Read [Raw payloads](/schemas/raw-payloads) for an example of the message shape.
+- Read [Authentication](/reference/authentication) before making authenticated raw queries.
+- Read [Standardised formats](/schemas/standardised-formats) if you decide you want the normalized alternative.
