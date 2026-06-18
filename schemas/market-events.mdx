@@ -1,0 +1,44 @@
+---
+title: "Market events"
+sidebarTitle: "Market Events"
+description: "Normalized market state changes such as funding rates, liquidations, and quotes."
+---
+
+Market events capture non-trade state changes such as funding updates, liquidation prints, and venue-level status transitions.
+
+## Common event types
+
+The `/events` endpoint returns mixed event types:
+
+- `trade`: executed transactions
+- `bar`: OHLCV candles
+- `datapoint`: market state updates such as funding rates or liquidations
+- `orderbook`: order book snapshots or updates
+
+## Common datapoint labels
+
+- `funding_rate`: perpetual funding rate
+- `open_interest`: open contracts or positions
+- `liquidation`: liquidation event
+- `index_price`: mark or index price update
+
+Example:
+
+```json
+{
+  "timestamp": 1767225600456000,
+  "venue": "lighter",
+  "symbol": "SOL-USD",
+  "type": "datapoint",
+  "data": {
+    "label": "funding_rate",
+    "value": 0.00017
+  }
+}
+```
+
+## Next steps
+
+- Read [Events API](/reference/events-api) for mixed event stream query behavior.
+- Read [Standardised formats](/schemas/standardised-formats) to see how datapoints fit the common envelope.
+- Read [Market coverage](/markets/market-coverage) if you want to check which venue categories Polaris tracks.

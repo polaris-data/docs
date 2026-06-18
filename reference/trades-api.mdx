@@ -1,0 +1,51 @@
+---
+title: "Trades API"
+sidebarTitle: "Trades API"
+description: "Query recent normalized trade events with the Polaris trades endpoint."
+---
+
+Use `GET /trades` when you want execution-level records only.
+
+## Endpoint
+
+`GET /trades`
+
+## Request shape
+
+| Parameter | Required | Notes |
+| --- | --- | --- |
+| `exchange` | Yes | Exchange ID |
+| `asset` | Yes | Normalized asset or instrument ID |
+| `limit` | No | Page size |
+| `cursor` | No | Opaque pagination token |
+| `from` | No | Explicit start time; usually requires bearer auth |
+| `to` | No | Explicit end time; usually requires bearer auth |
+
+## Access behavior
+
+| Mode | Behavior |
+| --- | --- |
+| No API key | Limited to the latest 6 hours |
+| With API key | Supports broader historical queries and custom time bounds |
+
+## Example
+
+```bash
+curl "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&limit=100"
+```
+
+## Response pattern
+
+```json
+{
+  "data": [],
+  "next_cursor": "opaque_token_or_null",
+  "has_more": false
+}
+```
+
+## Next steps
+
+- Read [Trades](/schemas/trades) to understand the normalized trade payload.
+- Read [Authentication](/reference/authentication) if you need explicit historical bounds.
+- Read [Events API](/reference/events-api) if you need more than just executions.

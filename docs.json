@@ -1,34 +1,71 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Polaris",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#171717",
+    "light": "#171717",
+    "dark": "#E5E5E5"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "pages": [
       {
-        "group": "Getting Started",
+        "group": "Start Here",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          "guides/connect",
+          "guides/choose-the-right-data"
+        ]
+      },
+      {
+        "group": "Access Data",
+        "expanded": false,
+        "pages": [
+          "reference/api-reference",
+          "reference/authentication",
+          "reference/catalog",
+          "reference/snapshots",
+          "reference/trades-api",
+          "reference/events-api",
+          "reference/ohlcv-api",
+          "reference/raw-api"
+        ]
+      },
+      {
+        "group": "Schemas",
+        "expanded": false,
+        "pages": [
+          "schemas/standardised-formats",
+          "schemas/trades",
+          "schemas/market-events",
+          "schemas/ohlcv",
+          "schemas/raw-payloads"
+        ]
+      },
+      {
+        "group": "SDKs",
+        "expanded": false,
+        "pages": [
+          "sdks/python",
+          "sdks/rust"
+        ]
+      },
+      {
+        "group": "Markets",
+        "expanded": false,
+        "pages": [
+          "markets/market-coverage"
         ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "CLI",
+          "href": "https://github.com/polaris-data/cli",
+          "icon": "terminal"
         }
       ]
     }
@@ -41,13 +78,13 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:hello@polaris.supply"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Open Polaris",
+      "href": "https://polaris.supply"
     }
   },
   "contextual": {
@@ -64,9 +101,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/polaris_supply",
+      "github": "https://github.com/polaris-data/cli"
     }
   }
 }

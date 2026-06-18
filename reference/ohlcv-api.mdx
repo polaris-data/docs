@@ -1,0 +1,37 @@
+---
+title: "OHLCV API"
+sidebarTitle: "OHLCV API"
+description: "Query interval-aligned OHLCV bars from the Polaris OHLCV endpoint."
+---
+
+Use `GET /ohlcv` when you want interval-based bar data instead of raw executions.
+
+## Endpoint
+
+`GET /ohlcv`
+
+## Request shape
+
+| Parameter | Required | Notes |
+| --- | --- | --- |
+| `exchange` | Yes | Exchange ID |
+| `asset` | Yes | Normalized asset or instrument ID |
+| `interval` | Yes | Duration token such as `1m`, `5m`, or `1h` |
+| `format` | No | Supports `tradingview` |
+| `limit` | No | Page size |
+| `cursor` | No | Opaque pagination token |
+| `from` | No | Explicit start time; usually requires bearer auth |
+| `to` | No | Explicit end time; usually requires bearer auth |
+
+## Access behavior
+
+| Mode | Behavior |
+| --- | --- |
+| No API key | Limited to the latest 6 hours and latest 50 bars |
+| With API key | Supports broader historical queries and custom time bounds |
+
+## Next steps
+
+- Read [OHLCV](/schemas/ohlcv) to understand the bar payload.
+- Read [Trades API](/reference/trades-api) if you need execution-level data instead of bars.
+- Read [Snapshots](/reference/snapshots) if you want bulk historical standardized files.

@@ -1,0 +1,48 @@
+---
+title: "Authentication"
+sidebarTitle: "Authentication"
+description: "How Polaris authentication works across REST requests, snapshots, and SDKs."
+---
+
+Polaris uses API key authentication. Send your key in the `Authorization` header as a bearer token for authenticated requests.
+
+## Header format
+
+```http
+Authorization: Bearer pk_live_your_key
+```
+
+## When auth is required
+
+| Surface | Auth requirement |
+| --- | --- |
+| `GET /catalog` | Public |
+| `GET /snapshots` | Public |
+| `GET /snapshots/download` | Public unless the dataset access policy requires bearer auth |
+| `GET /trades` | Public for limited recent access; bearer auth for broader historical queries |
+| `GET /events` | Public for limited recent access; bearer auth for broader historical queries |
+| `GET /ohlcv` | Public for limited recent access; bearer auth for broader historical queries |
+| `GET /raw` | Bearer auth required |
+
+## Shared request patterns
+
+| Pattern | Notes |
+| --- | --- |
+| `exchange` + `asset` | Common market selector across data endpoints |
+| `from` + `to` | Explicit time bounds; often requires bearer auth on direct query endpoints |
+| `limit` | Page size; defaults and maximums vary by endpoint |
+| `cursor` | Opaque token used to fetch the next page |
+
+## Example
+
+```bash
+curl \
+  -H "Authorization: Bearer pk_live_your_key" \
+  "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&from=2024-01-01T00:00:00Z&to=2024-01-01T01:00:00Z&limit=100"
+```
+
+## Next steps
+
+- Read [Catalog](/reference/catalog) before you build authenticated market-specific requests.
+- Read [Trades API](/reference/trades-api) or [Events API](/reference/events-api) for endpoint-specific query behavior.
+- Read [Quickstart](/quickstart) if you want the fastest end-to-end path to first data.

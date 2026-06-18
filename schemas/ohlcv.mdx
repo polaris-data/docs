@@ -1,0 +1,40 @@
+---
+title: "OHLCV"
+sidebarTitle: "OHLCV"
+description: "Deterministic candle aggregations with fixed UTC interval boundaries."
+---
+
+OHLCV data is interval-aligned and deterministic. Candle boundaries are fixed to UTC intervals, which keeps joins and cross-venue aggregation consistent.
+
+## Bar payload
+
+- `data.open`, `data.high`, `data.low`, `data.close`: interval prices
+- `data.volume`: traded base volume for the bar
+- `data.interval`: duration token such as `1m`, `5m`, or `1h`
+
+Example:
+
+```json
+{
+  "timestamp": 1767225660000000,
+  "venue": "hyperliquid",
+  "symbol": "BTC-USD",
+  "type": "bar",
+  "data": {
+    "interval": "1m",
+    "open": 64290.2,
+    "high": 64310.5,
+    "low": 64271.1,
+    "close": 64302.0,
+    "volume": 38.47
+  }
+}
+```
+
+For endpoint parameters such as `interval` and `format=tradingview`, see the [OHLCV API](/reference/ohlcv-api).
+
+## Next steps
+
+- Read [OHLCV API](/reference/ohlcv-api) for request parameters and limits.
+- Read [Trades](/schemas/trades) if you need execution-level records instead of interval aggregations.
+- Read [Snapshots](/reference/snapshots) if you want bulk historical standardized files.

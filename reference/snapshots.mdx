@@ -1,0 +1,89 @@
+---
+title: "Snapshots"
+sidebarTitle: "Snapshots"
+description: "List and download canonical daily snapshot files for historical ingestion."
+---
+
+Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
+
+## Preferred historical workflow
+
+1. Use [Catalog](/reference/catalog) to choose a valid `exchange` and `asset`.
+2. Call `GET /snapshots` to list daily snapshot files.
+3. Call `GET /snapshots/download` to fetch one file by `key`.
+4. Decompress the `.jsonl.zst` file locally and treat it as the canonical normalized event source.
+
+## `GET /snapshots`
+
+Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
+
+- Required: `exchange`, `asset`
+- Optional: `from`, `to`, `limit`, `cursor`
+- Default: `limit=200`
+- Maximum: `limit=1000`
+- If `from` and `to` are omitted, the server uses a recent default lookback window
+
+Example:
+
+```bash
+curl "https://api.polaris.supply/snapshots?exchange=hyperliquid&asset=BTC-USD&from=2026-05-07T00:00:00Z&to=2026-05-07T03:00:00Z&limit=2"
+```
+
+Response shape:
+
+```json
+{
+  "exchange": "hyperliquid",
+  "asset": "BTC-USD",
+  "access": {
+    "status": "preview",
+    "public_cutoff_date": "2026-05-02"
+  },
+  "total": 2,
+  "total_bytes": 987654321,
+  "limit": 2,
+  "has_more": false,
+  "next_cursor": null,
+  "snapshots": [
+    {
+      "date": "2026-05-07",
+      "key": "snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst",
+      "filename": "hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst"
+    }
+  ]
+}
+```
+
+## `GET /snapshots/download`
+
+Downloads a single standardized snapshot file by key.
+
+- Required: `key` from a `/snapshots` response
+- Optional: `filename` to override the suggested download name
+- Accepted key formats include the full `.jsonl.zst` suffix or the same key without it
+- Bearer auth is only required when the dataset access policy returned by `/snapshots` requires it
+
+Example:
+
+```bash
+curl -L \
+  "https://api.polaris.supply/snapshots/download?key=snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst" \
+  -o hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst
+```
+
+## Error behavior
+
+- `400` for a missing or invalid `key`
+- `401` when bearer auth is required by dataset policy
+- `403` for forbidden key prefixes
+- `404` when the snapshot file is not found
+
+## What to do with snapshot files
+
+After download, decompress the `.jsonl.zst` file locally and use it as the canonical normalized event source. You can derive trade-only views, local OHLCV bars, and narrower event subsets without repeating the original API request.
+
+## Next steps
+
+- Read [Standardised formats](/schemas/standardised-formats) to understand the event envelope inside snapshot files.
+- Read [Trades](/schemas/trades) and [OHLCV](/schemas/ohlcv) if you plan to derive narrower views from normalized data.
+- Read [Raw API](/reference/raw-api) instead if you need venue-native payloads rather than standardized files.

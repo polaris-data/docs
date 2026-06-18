@@ -1,0 +1,62 @@
+---
+title: "Catalog"
+sidebarTitle: "Catalog"
+description: "Discover exchange coverage, valid market identifiers, and historical bounds before you query data."
+---
+
+Use catalog to discover exchange and asset availability before you build data requests.
+
+## Base URL
+
+All examples use `https://api.polaris.supply`.
+
+## `GET /catalog`
+
+Returns exchange coverage with assets, per-asset UTC bounds, dataset categories, and access metadata.
+
+- Optional: `exchange`, `asset`
+- `asset` requires `exchange`
+
+Example:
+
+```bash
+curl "https://api.polaris.supply/catalog?exchange=derive&asset=SOL-USD"
+```
+
+Response shape:
+
+```json
+{
+  "exchanges": [
+    {
+      "id": "derive",
+      "assets": [
+        {
+          "id": "SOL-USD",
+          "start": "2026-05-01T00:15:00.000Z",
+          "end": "2026-05-07T23:45:00.000Z",
+          "source": "manifest",
+          "categories": ["perp", "options"],
+          "access": {
+            "status": "preview",
+            "public_cutoff_date": "2026-05-28"
+          }
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-05-19T10:28:00.000Z"
+}
+```
+
+## When to use catalog
+
+- Confirm that an `exchange` and `asset` pair is valid before making data requests.
+- Check the earliest and latest available timestamps for a market.
+- Inspect dataset category coverage for a market before you design downstream jobs.
+
+## Next steps
+
+- Read [Snapshots](/reference/snapshots) if you want bulk historical files for a market you just validated.
+- Read [Trades API](/reference/trades-api) if you want to query recent normalized events directly.
+- Read [Market coverage](/markets/market-coverage) if you want a broader view of supported venue categories.

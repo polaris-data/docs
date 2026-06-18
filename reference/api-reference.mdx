@@ -1,0 +1,61 @@
+---
+title: "API overview"
+sidebarTitle: "API Overview"
+description: "Choose the right Polaris REST endpoint and jump into smaller endpoint-specific reference pages."
+---
+
+Polaris provides REST endpoints at `https://api.polaris.supply`. You do not need to memorize the whole surface at once. Choose the endpoint family that matches your task, then read the smaller page for that endpoint.
+
+## Start with the right endpoint
+
+| Task | Page |
+| --- | --- |
+| Authenticate requests and understand shared request patterns | [Authentication](/reference/authentication) |
+| Discover valid exchanges, assets, and time bounds | [Catalog](/reference/catalog) |
+| Download bulk historical standardized files | [Snapshots](/reference/snapshots) |
+| Query recent normalized trade events | [Trades API](/reference/trades-api) |
+| Query recent mixed event streams | [Events API](/reference/events-api) |
+| Query interval-based candles | [OHLCV API](/reference/ohlcv-api) |
+| Query exchange-native payloads | [Raw API](/reference/raw-api) |
+
+## Endpoint families
+
+### Metadata
+
+- `GET /catalog`
+
+### Historical files
+
+- `GET /snapshots`
+- `GET /snapshots/download`
+
+### Recent query endpoints
+
+- `GET /trades`
+- `GET /events`
+- `GET /ohlcv`
+- `GET /raw`
+
+## Common response pattern
+
+`/trades`, `/events`, `/raw`, and `/ohlcv` return paginated responses:
+
+```json
+{
+  "data": [],
+  "next_cursor": "opaque_token_or_null",
+  "has_more": false
+}
+```
+
+## Recommended reading order
+
+1. [Authentication](/reference/authentication)
+2. [Catalog](/reference/catalog)
+3. [Snapshots](/reference/snapshots) or one of the recent query endpoint pages
+
+## Next steps
+
+- Read [Authentication](/reference/authentication) if you are about to make your first request.
+- Read [Choose the right data](/guides/choose-the-right-data) if you are deciding between snapshots and direct API queries.
+- Read [Trades API](/reference/trades-api) if you want the simplest recent-data endpoint.

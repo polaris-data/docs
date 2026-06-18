@@ -1,0 +1,38 @@
+---
+title: "Raw payloads"
+sidebarTitle: "Raw Payloads"
+description: "Unmodified exchange-native messages for replayability, auditing, and custom parsing."
+---
+
+Raw format preserves exchange-native messages as captured, including naming, nesting, and venue-specific field types.
+
+## When raw is useful
+
+- Auditing parser behavior against source messages
+- Rebuilding custom normalization pipelines
+- Debugging venue schema drift in production
+
+Example:
+
+```json
+{
+  "timestamp": 1767225600999000,
+  "venue": "binance",
+  "symbol": "BTCUSDT",
+  "type": "raw_trade",
+  "data": {
+    "e": "trade",
+    "p": "64322.10",
+    "q": "0.004",
+    "m": true
+  }
+}
+```
+
+Raw payload access requires an API key. See [Connecting](/guides/connect) and the [Raw API](/reference/raw-api) for request details.
+
+## Next steps
+
+- Read [Raw API](/reference/raw-api) for request parameters and auth requirements.
+- Read [Choose the right data](/guides/choose-the-right-data) if you are deciding between raw and standardized surfaces.
+- Read [Standardised formats](/schemas/standardised-formats) if you want the normalized alternative.

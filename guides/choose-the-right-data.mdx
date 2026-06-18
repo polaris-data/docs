@@ -1,0 +1,47 @@
+---
+title: "Choose the right data"
+sidebarTitle: "Choose the Right Data"
+description: "Compare Polaris data surfaces so you can start with the right format and access pattern."
+---
+
+Most teams do not need every Polaris surface on day one. Start by choosing the format and delivery path that matches your workflow.
+
+## Compare data surfaces
+
+| Surface | Best for | What you get | Tradeoff |
+| --- | --- | --- | --- |
+| Standardised formats | Cross-venue analytics, features, and ingestion pipelines | One canonical event envelope across venues | You do not keep venue-native field names |
+| Raw payloads | Replayability, parser audits, custom normalization | Unmodified exchange-native messages | You must handle venue-specific schemas yourself |
+| Snapshots | Bulk historical ingestion | Daily `.jsonl.zst` files for standardized datasets | Not the best fit for low-latency recent polling |
+| REST endpoints | Recent queries, scripts, product features | Direct API access to trades, events, OHLCV, raw, and metadata | You must page through responses and manage query flow yourself |
+
+## Recommended starting points
+
+### If you are building a research pipeline
+
+Start with [Snapshots](/reference/snapshots) and [Standardised formats](/schemas/standardised-formats). That gives you the fastest path to a local dataset with a stable cross-venue schema.
+
+### If you are validating current market activity
+
+Start with [Trades API](/reference/trades-api) or [Events API](/reference/events-api). Use these when you need recent records rather than bulk historical files.
+
+### If you are debugging venue behavior
+
+Start with [Raw API](/reference/raw-api). Use raw payloads when you need exact source messages or you are maintaining custom parsers.
+
+### If you are unsure what a market supports
+
+Start with [Catalog](/reference/catalog). It tells you which `exchange` and `asset` pairs are valid and shows historical bounds.
+
+## Recommended first path
+
+1. Run the [Quickstart](/quickstart).
+2. Confirm access in [Connecting](/guides/connect).
+3. Check market availability in [Catalog](/reference/catalog).
+4. Download one file from [Snapshots](/reference/snapshots).
+
+## Next steps
+
+- Read [Standardised formats](/schemas/standardised-formats) if you want one schema across venues.
+- Read [Raw payloads](/schemas/raw-payloads) if you need exact venue-native structure.
+- Read [API overview](/reference/api-reference) if you plan to query recent data directly.

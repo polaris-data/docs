@@ -1,0 +1,41 @@
+---
+title: "Standardised formats"
+sidebarTitle: "Standardised Formats"
+description: "The canonical event envelope and typed payloads used across supported venues."
+---
+
+Standardised formats give you one schema across venues so analytics, storage, and model features can be exchange-agnostic.
+
+## Canonical event envelope
+
+Each record is wrapped in a stable envelope with normalized identifiers and consistent timestamp precision.
+
+### Core fields
+
+- `timestamp`: event time in UTC microseconds since Unix epoch
+- `venue`: normalized exchange ID, for example `hyperliquid`
+- `symbol`: normalized instrument ID, for example `BTC-USD`
+- `type`: unified event category such as `trade`, `orderbook`, `bar`, or `datapoint`
+- `data`: typed payload for the event type
+
+Example:
+
+```json
+{
+  "timestamp": 1767225600000000,
+  "venue": "hyperliquid",
+  "symbol": "BTC-USD",
+  "type": "trade",
+  "data": {
+    "price": 64321.5,
+    "quantity": 0.025,
+    "side": "buy"
+  }
+}
+```
+
+## Next steps
+
+- Read [Trades](/schemas/trades) for execution-level payloads.
+- Read [Market events](/schemas/market-events) for datapoints, funding, and other state changes.
+- Read [Snapshots](/reference/snapshots) if you want these records in bulk historical files.
