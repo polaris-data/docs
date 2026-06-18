@@ -1,0 +1,110 @@
+---
+title: "API reference"
+description: "REST endpoints for market data, metadata discovery, and snapshot downloads."
+---
+
+Polaris provides REST endpoints for market data access at `https://api.polaris.supply`.
+
+## Authentication
+
+Pass your API key in the `Authorization` header as a bearer token:
+
+```http
+Authorization: Bearer pk_live_your_key
+```
+
+If you want to validate access quickly, use the [Snapshots](/reference/snapshots) workflow to download one historical file.
+
+## Data endpoints
+
+### `GET /trades`
+
+Normalized trade events only.
+
+- Required: `exchange`, `asset`
+- Optional: `limit`, `cursor`, `from`, `to`
+- No-key requests are limited to the latest 6 hours
+
+### `GET /events`
+
+Mixed event types including trades, bars, datapoints, and order book updates.
+
+- Required: `exchange`, `asset`
+- Optional: `limit`, `cursor`, `from`, `to`
+- No-key requests are limited to the latest 6 hours
+
+### `GET /ohlcv`
+
+Aggregated OHLCV bars.
+
+- Required: `exchange`, `asset`, `interval`
+- Optional: `format=tradingview`, `limit`, `cursor`, `from`, `to`
+- No-key requests are limited to the latest 6 hours and latest 50 bars
+
+### `GET /raw`
+
+Raw exchange-native payloads.
+
+- Required: `exchange`, `asset`
+- Optional: `limit`, `cursor`, `from`, `to`
+- Requires an API key
+
+### `GET /snapshots`
+
+Canonical daily historical files for standardised datasets.
+
+- Required: `exchange`, `asset`
+- Optional: `from`, `to`, `limit`, `cursor`
+- Default `limit` is `200`
+- Maximum `limit` is `1000`
+
+### `GET /snapshots/download`
+
+Download a single snapshot file by key.
+
+- Required: `key`
+- Optional: `filename`
+- Successful requests return `302`, so clients should follow redirects
+
+## Metadata endpoint
+
+### `GET /catalog`
+
+Use catalog to discover exchanges, assets, dataset categories, access metadata, and historical bounds.
+
+- Optional: `exchange`, `asset`
+- `asset` requires `exchange`
+
+## Common parameters
+
+- `from` and `to`: accepted by `/snapshots` without auth; other historical data queries usually require bearer auth
+- `limit`: page size; defaults and maximums vary by endpoint
+- `cursor`: opaque pagination token returned by the previous response
+
+## Pagination response
+
+`/trades`, `/events`, `/raw`, and `/ohlcv` return:
+
+```json
+{
+  "data": [],
+  "next_cursor": "opaque_token_or_null",
+  "has_more": false
+}
+```
+
+## Examples
+
+No API key:
+
+```bash
+curl "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&limit=100"
+```
+
+With API key and explicit time bounds:
+
+```bash
+curl \
+  -H "Authorization: Bearer pk_live_your_key" \
+  "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&from=2024-01-01T00:00:00Z&to=2024-01-01T01:00:00Z&limit=100"
+```

@@ -1,0 +1,32 @@
+---
+title: "Connecting"
+description: "Authenticate with Polaris and reuse the same API key across REST and SDK integrations."
+---
+
+Polaris uses API key authentication. Generate a key in your account, then send it in the `Authorization` header as a bearer token for authenticated requests.
+
+## Authentication
+
+```bash
+curl \
+  -H "Authorization: Bearer pk_live_your_key" \
+  "https://api.polaris.supply/trades?exchange=binance&asset=BTC-USDT&limit=100"
+```
+
+## Where you use the API key
+
+Use the same Polaris API key across:
+
+- [REST API](/reference/api-reference)
+- [Python SDK](/sdks/python)
+- [Rust SDK](/sdks/rust)
+
+## Connection notes
+
+- Public requests work for some endpoints, but they are more limited.
+- Historical `from` and `to` queries on most data endpoints require a bearer token.
+- Snapshot downloads only require bearer auth when the dataset access policy returned by `/snapshots` requires it.
+
+<Tip>
+  If you are testing access for the first time, start with the [Quickstart](/quickstart) and use the snapshots workflow before moving to higher-volume queries.
+</Tip>

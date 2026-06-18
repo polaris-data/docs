@@ -1,0 +1,33 @@
+---
+title: "Getting started"
+description: "Set up access, choose a market, and validate the first Polaris dataset for your workflow."
+---
+
+Polaris is built for teams that need exchange-native market data without maintaining venue-specific ingestion and normalization logic themselves. You can start with standardized datasets for fast downstream use, then move to raw payloads when you need exact replayability.
+
+## Fastest path to first download
+
+1. Generate an API key in your Polaris account.
+2. Use [Catalog](/reference/catalog) to choose a valid `exchange` and `asset`.
+3. Use [Snapshots](/reference/snapshots) to list and download a standardized historical file.
+4. Confirm the timestamps, event types, and field mappings match your research or production requirements.
+
+## What to decide first
+
+### Dataset surface
+
+- Use [Standardised formats](/schemas/standardised-formats) when you want one schema across venues.
+- Use [Raw payloads](/schemas/raw-payloads) when you need exchange-native message structure.
+
+### Query shape
+
+- Use the [API reference](/reference/api-reference) for recent programmatic queries.
+- Use [Snapshots](/reference/snapshots) for canonical bulk historical ingestion.
+
+### Market coverage
+
+Use [Catalog](/reference/catalog) before you build requests. It returns valid market identifiers, dataset categories, and historical bounds for each asset.
+
+## Recommended first workflow
+
+Start with one market and one UTC day. Download a single snapshot file, inspect the schema locally, and confirm your assumptions before you scale ingestion across venues or time ranges.

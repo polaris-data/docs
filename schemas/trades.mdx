@@ -1,0 +1,31 @@
+---
+title: "Trades"
+description: "Execution-level records with normalized price, size, and side fields."
+---
+
+Trade events represent executed transactions only. They are normalized so you can compare fills across venues without translating symbol formats or side conventions.
+
+## Fields
+
+- `timestamp`: execution time in UTC microseconds
+- `data.price`: matched execution price
+- `data.quantity`: executed size in base units
+- `data.side`: aggressor side, one of `buy`, `sell`, or `unknown`
+
+Example:
+
+```json
+{
+  "timestamp": 1767225600123456,
+  "venue": "binance",
+  "symbol": "ETH-USD",
+  "type": "trade",
+  "data": {
+    "price": 3182.4,
+    "quantity": 1.25,
+    "side": "sell"
+  }
+}
+```
+
+For request parameters and pagination, see the [API reference](/reference/api-reference).
