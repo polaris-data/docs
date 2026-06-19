@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "Polaris",
   "colors": {
-    "primary": "#171717",
-    "light": "#171717",
-    "dark": "#E5E5E5"
+    "primary": "#0D63F3",
+    "light": "#7BC3FF",
+    "dark": "#1349C5"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -78,7 +78,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hello@polaris.supply"
+        "href": "https://t.me/hilliamt"
       }
     ],
     "primary": {
