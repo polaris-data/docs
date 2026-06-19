@@ -1,12 +1,22 @@
 ---
-title: "Connecting"
-sidebarTitle: "Connecting"
-description: "Authenticate with Polaris and reuse the same API key across REST and SDK integrations."
+title: "Authentication"
+sidebarTitle: "Authentication"
+description: "Use public access when it is enough, and add a Polaris API key when you need broader or older data access."
 ---
 
-Polaris uses API key authentication. Generate a key in your account, then send it in the `Authorization` header as a bearer token for authenticated requests.
+You do not need an API key for every Polaris workflow. Many first-run tasks work without authentication, including public catalog access and public-window queries on some endpoints.
 
-## Authentication
+Add a Polaris API key when you need broader access, explicit historical ranges on restricted endpoints, or access that matches your account tier.
+
+## When to use an API key
+
+Use a bearer token when:
+
+- You need explicit `from` and `to` ranges on endpoints that restrict those fields for public requests.
+- You need older preview data that sits outside the public window.
+- You want access that reflects your account tier.
+
+## Bearer auth
 
 ```bash
 curl \
@@ -22,9 +32,9 @@ Use the same Polaris API key across:
 - [Python SDK](/sdks/python)
 - [Rust SDK](/sdks/rust)
 
-## Connection notes
+## Authentication notes
 
-- Public requests work for some endpoints, but they are more limited.
+- Public requests work for some endpoints and are the easiest place to start.
 - Historical `from` and `to` queries on most data endpoints require a bearer token.
 - Snapshot downloads only require bearer auth when the dataset access policy returned by `/snapshots` requires it.
 

@@ -1,73 +1,105 @@
 ---
 title: "Quickstart"
 sidebarTitle: "Quickstart"
-description: "Generate an API key, discover a market, and download your first Polaris snapshot."
+description: "Install the Polaris CLI, browse datasets, and download your first data."
 ---
 
-This quickstart takes you from zero to a local Polaris dataset file. It uses the historical snapshots workflow because it is the fastest way to confirm access and inspect the standardised schema.
+The fastest way to get started with Polaris is the CLI and TUI. It lets you browse remote datasets, download the ranges you need, and inspect local files without learning the API first.
 
 ## Prerequisites
 
 Before you begin, you need:
 
-- A Polaris account and API key
-- `curl`
-- `zstd` or another tool that can decompress `.zst` files
+- A terminal
+- Internet access
 
-## Download your first file
+You do not need an API key for the first-run flow.
+
+## Install and run Polaris
 
 <Steps>
-  <Step title="Generate an API key">
-    Create an API key in your Polaris account. Use it as a bearer token for authenticated requests.
+  <Step title="Install the CLI">
+    Install `polaris` with the official install script.
 
     ```bash
-    export POLARIS_API_KEY="pk_live_your_key"
+    curl -fsSL https://raw.githubusercontent.com/polaris-data/cli/main/install.sh | bash
     ```
   </Step>
 
-  <Step title="Choose a market">
-    Use `GET /catalog` to find a valid exchange and asset pair.
+  <Step title="Open the TUI">
+    Start the interactive dataset browser.
 
     ```bash
-    curl "https://api.polaris.supply/catalog?exchange=hyperliquid&asset=BTC-USD"
+    polaris
     ```
   </Step>
 
-  <Step title="List available snapshots">
-    Request daily snapshot files for the market and date range you want.
+  <Step title="Browse a market in the terminal">
+    If you prefer plain CLI output, inspect a specific dataset directly.
 
     ```bash
-    curl "https://api.polaris.supply/snapshots?exchange=hyperliquid&asset=BTC-USD&from=2026-05-07T00:00:00Z&to=2026-05-07T03:00:00Z&limit=2"
+    polaris catalog --exchange hyperliquid --asset BTCUSDT
     ```
   </Step>
 
-  <Step title="Download one snapshot">
-    Copy a `key` from the previous response, then follow the redirect to download the file.
+  <Step title="Download one time range">
+    Download the dataset range you want.
 
     ```bash
-    curl -L \
-      "https://api.polaris.supply/snapshots/download?key=snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst" \
-      -o hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst
+    polaris download \
+      --exchange hyperliquid \
+      --asset BTCUSDT \
+      --from 2026-06-01T00:00:00Z \
+      --to 2026-06-02T00:00:00Z
     ```
   </Step>
 
-  <Step title="Decompress and inspect it">
-    Snapshot files are compressed JSON Lines. Decompress them locally before loading them into your own pipeline.
+  <Step title="Inspect local data">
+    Confirm what Polaris downloaded locally.
 
     ```bash
-    zstd -d hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst
+    polaris list --exchange hyperliquid --asset BTCUSDT
     ```
   </Step>
 </Steps>
 
+## Add sign-in when you need it
+
+You only need to sign in when you want access that goes beyond the public path.
+
+Use the browser flow:
+
+```bash
+polaris login
+```
+
+Or save a key manually:
+
+```bash
+polaris key
+```
+
+Common reasons to sign in:
+
+- You need older preview data that is outside the public window.
+- You want access that matches your account tier.
+- You want authenticated workflows saved into the CLI locally.
+
+## Prefer the API instead?
+
+If you want to work directly with HTTP requests or the Python SDK instead of the CLI, start with:
+
+- [Catalog](/reference/catalog)
+- [Snapshots](/reference/snapshots)
+- [Authentication](/guides/authentication)
+
 <Tip>
-  Next, read [Connecting](/guides/connect), [Catalog](/reference/catalog), and [Snapshots](/reference/snapshots) to understand authentication, coverage discovery, and download behavior in more detail.
+  The CLI is the easiest first-run path. The API and SDK pages are better once you know the dataset or workflow you want.
 </Tip>
 
 ## Next steps
 
-- Read [Connecting](/guides/connect) to understand how auth works across REST and SDKs.
-- Read [Choose the right data](/guides/choose-the-right-data) if you are deciding between snapshots, REST, and raw payloads.
+- Read [Authentication](/guides/authentication) to understand when bearer auth matters.
+- Read [Browse datasets](/guides/choose-the-right-data) if you are deciding between snapshots, REST, and raw payloads.
+- Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook workflow.
 - Read [Standardised formats](/schemas/standardised-formats) before you build downstream parsing logic.
-
-Need help with access or dataset coverage? Email [hello@polaris.supply](mailto:hello@polaris.supply).

@@ -1,7 +1,15 @@
 ---
-title: "Choose the right data"
-sidebarTitle: "Choose the Right Data"
+title: "Browse datasets"
+sidebarTitle: "Browse Datasets"
 description: "Compare Polaris data surfaces so you can start with the right format and access pattern."
+keywords:
+  - notebook
+  - Jupyter
+  - trades
+  - OHLCV
+  - charts
+  - research
+  - pandas
 ---
 
 Most teams do not need every Polaris surface on day one. Start by choosing the format and delivery path that matches your workflow.
@@ -25,6 +33,14 @@ Start with [Snapshots](/reference/snapshots) and [Standardised formats](/schemas
 
 Start with [Trades API](/reference/trades-api) or [Events API](/reference/events-api). Use these when you need recent records rather than bulk historical files.
 
+### If you are building a notebook or chart
+
+Start with [Catalog](/reference/catalog), then choose the query shape that matches your analysis.
+
+- Use [OHLCV API](/reference/ohlcv-api) or `client.ohlcv(...)` for a fast chart or a quick market view.
+- Use [Trades API](/reference/trades-api) or `client.trades(...)` when you want execution-level analysis.
+- Use [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want an end-to-end notebook example with pandas and matplotlib.
+
 ### If you are debugging venue behavior
 
 Start with [Raw API](/reference/raw-api). Use raw payloads when you need exact source messages or you are maintaining custom parsers.
@@ -36,12 +52,13 @@ Start with [Catalog](/reference/catalog). It tells you which `exchange` and `ass
 ## Recommended first path
 
 1. Run the [Quickstart](/quickstart).
-2. Confirm access in [Connecting](/guides/connect).
+2. Confirm access in [Authentication](/guides/authentication).
 3. Check market availability in [Catalog](/reference/catalog).
 4. Download one file from [Snapshots](/reference/snapshots).
 
 ## Next steps
 
+- Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook-first workflow.
 - Read [Standardised formats](/schemas/standardised-formats) if you want one schema across venues.
 - Read [Raw payloads](/schemas/raw-payloads) if you need exact venue-native structure.
 - Read [API overview](/reference/api-reference) if you plan to query recent data directly.

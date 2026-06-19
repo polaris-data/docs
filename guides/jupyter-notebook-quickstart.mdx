@@ -1,0 +1,166 @@
+---
+title: "Create a Jupyter notebook with polaris_data"
+sidebarTitle: "Jupyter Notebook Quickstart"
+description: "Use the Polaris Python SDK in a Jupyter notebook to discover a market, fetch Hyperliquid SPX trades, and plot a chart with pandas and matplotlib."
+keywords:
+  - Jupyter notebook
+  - Python SDK
+  - polaris_data
+  - Hyperliquid
+  - SPX
+  - SpaceX
+  - pandas
+  - matplotlib
+  - trades
+  - chart
+---
+
+Use this guide when you want a notebook that discovers a market, loads data into a DataFrame, and plots it quickly.
+
+If you are looking for the Hyperliquid "SpaceX" market, use `SPX` as the Polaris asset ID. Use [Catalog](/reference/catalog) to confirm the exact ID before you query data.
+
+## Install notebook dependencies
+
+Run this in a notebook cell:
+
+```python
+%pip install polaris-data pandas matplotlib
+```
+
+## Set your API key
+
+Use the same API key you use for REST requests.
+
+```python
+import os
+
+os.environ["POLARIS_API_KEY"] = "pk_live_your_key"
+```
+
+## Discover the exact market ID
+
+Do not guess the asset name. Query catalog and inspect the returned asset IDs first.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    catalog = client.catalog(exchange="hyperliquid")
+    assets = [asset["id"] for asset in catalog["exchanges"][0]["assets"]]
+    matches = [asset for asset in assets if "SPX" in asset]
+    print(matches)
+```
+
+On Hyperliquid, the market you might describe as "SpaceX" is currently exposed as `SPX`.
+
+## Fetch trades and plot them
+
+Use `trades(...)` when you want execution-level analysis.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+import matplotlib.pyplot as plt
+import pandas as pd
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=2)
+
+with PolarisClient() as client:
+    trades = client.trades(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+    )
+
+df = pd.DataFrame(trades)
+df["time"] = pd.to_datetime(df["timestamp"], unit="us", utc=True)
+df["price"] = df["data"].map(lambda row: row["price"])
+df["quantity"] = df["data"].map(lambda row: row["quantity"])
+df["side"] = df["data"].map(lambda row: row["side"])
+
+display(df.head())
+```
+
+```python
+fig, ax = plt.subplots(figsize=(12, 5))
+
+buy_trades = df[df["side"] == "buy"]
+sell_trades = df[df["side"] == "sell"]
+
+ax.scatter(
+    buy_trades["time"],
+    buy_trades["price"],
+    s=buy_trades["quantity"] * 8,
+    alpha=0.5,
+    label="Buy",
+)
+ax.scatter(
+    sell_trades["time"],
+    sell_trades["price"],
+    s=sell_trades["quantity"] * 8,
+    alpha=0.5,
+    label="Sell",
+)
+
+ax.set_title("Hyperliquid SPX trades")
+ax.set_xlabel("Time (UTC)")
+ax.set_ylabel("Price")
+ax.legend()
+plt.xticks(rotation=30)
+plt.tight_layout()
+plt.show()
+```
+
+This gives you a simple trade plot where marker size reflects executed quantity.
+
+## Use OHLCV when you want a fast price chart
+
+Use `ohlcv(...)` when you want a quick candle or line chart instead of individual trades.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+import matplotlib.pyplot as plt
+import pandas as pd
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    bars = client.ohlcv(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+        interval="1m",
+    )
+
+bars_df = pd.DataFrame(bars)
+bars_df["time"] = pd.to_datetime(bars_df["timestamp"], unit="us", utc=True)
+
+bars_df.plot(x="time", y="close", figsize=(12, 5), legend=False, title="Hyperliquid SPX close")
+plt.xlabel("Time (UTC)")
+plt.ylabel("Close")
+plt.tight_layout()
+plt.show()
+```
+
+Use this path when you need a quick market view. Switch back to `trades(...)` when you need execution detail.
+
+## What the SDK returns
+
+- `catalog(...)` returns a JSON object with exchanges and exact asset IDs.
+- `trades(...)` returns a list of normalized trade events.
+- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`.
+- `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
+
+## Next steps
+
+- Read [Python SDK](/sdks/python) for the core client methods and method signatures.
+- Read [Catalog](/reference/catalog) to understand market discovery and exact asset naming.
+- Read [Trades](/schemas/trades) if you want the normalized trade schema behind `trades(...)`.
+- Read [OHLCV](/schemas/ohlcv) if you want the bar schema behind `ohlcv(...)`.

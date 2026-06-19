@@ -2,6 +2,15 @@
 title: "Catalog"
 sidebarTitle: "Catalog"
 description: "Discover exchange coverage, valid market identifiers, and historical bounds before you query data."
+api: "GET /catalog"
+keywords:
+  - catalog
+  - market discovery
+  - asset IDs
+  - Hyperliquid
+  - SPX
+  - SpaceX
+  - Python SDK
 ---
 
 Use catalog to discover exchange and asset availability before you build data requests.
@@ -16,6 +25,46 @@ Returns exchange coverage with assets, per-asset UTC bounds, dataset categories,
 
 - Optional: `exchange`, `asset`
 - `asset` requires `exchange`
+
+## Parameters
+
+<ParamField query="exchange" type="string">
+  Exchange ID to inspect, for example `hyperliquid` or `lighter`.
+</ParamField>
+
+<ParamField query="asset" type="string">
+  Exact market identifier to filter within the selected exchange. Requires `exchange`.
+</ParamField>
+
+## Response fields
+
+<ResponseField name="exchanges" type="object[]" required>
+  Exchanges that match the query.
+</ResponseField>
+
+<ResponseField name="exchanges.id" type="string" required>
+  Exchange identifier.
+</ResponseField>
+
+<ResponseField name="exchanges.assets" type="object[]" required>
+  Market entries for the exchange.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.id" type="string" required>
+  Exact Polaris asset ID to use in requests.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.start" type="string" required>
+  Earliest available UTC timestamp for the market.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.end" type="string" required>
+  Latest available UTC timestamp for the market.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string" required>
+  UTC timestamp for the catalog snapshot.
+</ResponseField>
 
 Example:
 
@@ -54,9 +103,44 @@ Response shape:
 - Confirm that an `exchange` and `asset` pair is valid before making data requests.
 - Check the earliest and latest available timestamps for a market.
 - Inspect dataset category coverage for a market before you design downstream jobs.
+- Send bearer auth when you want catalog visibility that matches your account tier. Unauthenticated requests use the public catalog view.
+
+## Use exact Polaris asset IDs
+
+Catalog returns the exact asset IDs you should pass to the API and SDK. Treat those IDs as canonical.
+
+- Do not assume every venue uses the same symbol format.
+- Do not assume a user-facing market name matches the Polaris asset ID.
+- Filter with the exact `asset` value returned by catalog.
+
+For example, on Hyperliquid you might search for a market described as "SpaceX", but the Polaris asset ID is `SPX`.
+
+## Python example
+
+Use catalog first when you are building a notebook or script.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    catalog = client.catalog(exchange="hyperliquid")
+    assets = [asset["id"] for asset in catalog["exchanges"][0]["assets"]]
+    print(assets[:20])
+```
+
+If you already know the likely asset name, you can also query the exact pair directly:
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    market = client.catalog(exchange="hyperliquid", asset="SPX")
+    print(market)
+```
 
 ## Next steps
 
+- Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook workflow that starts from catalog and ends with a chart.
 - Read [Snapshots](/reference/snapshots) if you want bulk historical files for a market you just validated.
 - Read [Trades API](/reference/trades-api) if you want to query recent normalized events directly.
 - Read [Market coverage](/markets/market-coverage) if you want a broader view of supported venue categories.

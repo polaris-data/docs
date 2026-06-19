@@ -2,6 +2,7 @@
 title: "Raw API"
 sidebarTitle: "Raw API"
 description: "Query exchange-native payloads when you need replayability, audits, or custom parsing."
+api: "GET /raw"
 ---
 
 Use `GET /raw` when you need unmodified exchange-native payloads rather than standardized records.
@@ -16,23 +17,113 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 | --- | --- | --- |
 | `exchange` | Yes | Exchange ID |
 | `asset` | Yes | Market identifier |
-| `limit` | No | Page size |
+| `limit` | No | Defaults to `1000`; max `10000` |
 | `cursor` | No | Opaque pagination token |
-| `from` | No | Explicit start time |
-| `to` | No | Explicit end time |
+| `from` | No | Explicit start time; defaults to a 24-hour lookback when omitted |
+| `to` | No | Explicit end time; defaults to `now` when omitted |
+| `format` | No | Supports `http` or `file` |
 
-## Access behavior
+## Parameters
+
+<ParamField query="exchange" type="string" required>
+  Exchange ID.
+</ParamField>
+
+<ParamField query="asset" type="string" required>
+  Exact market identifier for the venue.
+</ParamField>
+
+<ParamField query="limit" type="number">
+  Page size.
+</ParamField>
+
+<ParamField query="cursor" type="string">
+  Opaque pagination token from a previous response.
+</ParamField>
+
+<ParamField query="from" type="string">
+  Inclusive UTC start time.
+</ParamField>
+
+<ParamField query="to" type="string">
+  Exclusive UTC end time.
+</ParamField>
+
+<ParamField query="format" type="string">
+  Response format. Omit for JSON, or use `file` for a `.jsonl.zst` export redirect.
+</ParamField>
+
+## Auth and defaults
 
 | Mode | Behavior |
 | --- | --- |
-| No API key | Not supported |
-| With API key | Required |
+| No bearer auth | Not supported. The endpoint returns `401`. |
+| With bearer auth | Required. If you omit `from` and `to`, the server defaults to a recent 24-hour lookback ending at `now`. |
 
 ## When to use it
 
 - Replay source messages
 - Audit parser behavior
 - Maintain your own venue-specific normalization
+
+## Response fields
+
+<ResponseField name="data" type="object[]" required>
+  Exchange-native payloads for the requested market and time range.
+</ResponseField>
+
+<ResponseField name="next_cursor" type="string">
+  Opaque pagination token for the next page, when present.
+</ResponseField>
+
+<ResponseField name="has_more" type="boolean" required>
+  Whether more results are available.
+</ResponseField>
+
+<ResponseField name="format" type="string" required>
+  Response mode. JSON responses return `http`.
+</ResponseField>
+
+<ResponseField name="limit" type="number" required>
+  Effective page size applied to the response.
+</ResponseField>
+
+<ResponseField name="total" type="number" required>
+  Total number of matching records before pagination.
+</ResponseField>
+
+<ResponseField name="range.from" type="string" required>
+  Effective UTC start time used for the query.
+</ResponseField>
+
+<ResponseField name="range.to" type="string" required>
+  Effective UTC end time used for the query.
+</ResponseField>
+
+<ResponseField name="range.source" type="string" required>
+  Always `query` for authenticated raw requests.
+</ResponseField>
+
+## Python SDK
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=1)
+
+with PolarisClient() as client:
+    rows = client.raw(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+    )
+
+print(rows[:2])
+```
 
 ## Next steps
 

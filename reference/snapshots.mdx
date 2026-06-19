@@ -2,6 +2,7 @@
 title: "Snapshots"
 sidebarTitle: "Snapshots"
 description: "List and download canonical daily snapshot files for historical ingestion."
+api: "GET /snapshots"
 ---
 
 Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
@@ -21,7 +22,87 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 - Optional: `from`, `to`, `limit`, `cursor`
 - Default: `limit=200`
 - Maximum: `limit=1000`
-- If `from` and `to` are omitted, the server uses a recent default lookback window
+- If `from` and `to` are omitted, the server defaults to a recent 24-hour lookback ending at `now`
+
+## Parameters
+
+<ParamField query="exchange" type="string" required>
+  Exchange ID to query.
+</ParamField>
+
+<ParamField query="asset" type="string" required>
+  Exact Polaris asset ID for the market.
+</ParamField>
+
+<ParamField query="from" type="string">
+  Inclusive UTC start time, typically in ISO 8601 format.
+</ParamField>
+
+<ParamField query="to" type="string">
+  Exclusive UTC end time, typically in ISO 8601 format.
+</ParamField>
+
+<ParamField query="limit" type="number" default={200}>
+  Number of snapshot entries to return. Maximum `1000`.
+</ParamField>
+
+<ParamField query="cursor" type="string">
+  Opaque pagination token from a previous response.
+</ParamField>
+
+## Notes
+
+- Listing does not require bearer auth.
+- Snapshot rows only appear for UTC dates that actually have source files behind them.
+- The response includes dataset-level access metadata so you can distinguish open, preview, and restricted markets before you download.
+
+## Response fields
+
+<ResponseField name="exchange" type="string" required>
+  Exchange you queried.
+</ResponseField>
+
+<ResponseField name="asset" type="string" required>
+  Asset you queried.
+</ResponseField>
+
+<ResponseField name="access.status" type="string" required>
+  Dataset access state for the requested market.
+</ResponseField>
+
+<ResponseField name="snapshots" type="object[]" required>
+  Matching daily snapshot entries.
+</ResponseField>
+
+<ResponseField name="snapshots.key" type="string" required>
+  Snapshot key to pass to `GET /snapshots/download`.
+</ResponseField>
+
+<ResponseField name="snapshots.filename" type="string" required>
+  Suggested local filename for the artifact.
+</ResponseField>
+
+## Python SDK
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(days=2)
+
+with PolarisClient() as client:
+    snapshots = client.list_snapshots(
+        exchange="hyperliquid",
+        asset="BTC-USD",
+        from_=start,
+        to=end,
+    )
+
+for snapshot in snapshots[:2]:
+    print(snapshot.key, snapshot.filename)
+```
 
 Example:
 
@@ -62,6 +143,8 @@ Downloads a single standardized snapshot file by key.
 - Optional: `filename` to override the suggested download name
 - Accepted key formats include the full `.jsonl.zst` suffix or the same key without it
 - Bearer auth is only required when the dataset access policy returned by `/snapshots` requires it
+- `mode=url` or `mode=json` returns JSON with a pre-signed URL instead of a `302` redirect
+- For an interactive endpoint page, read [Snapshot download](/reference/snapshot-download)
 
 Example:
 
@@ -84,6 +167,7 @@ After download, decompress the `.jsonl.zst` file locally and use it as the canon
 
 ## Next steps
 
+- Read [Snapshot download](/reference/snapshot-download) if you want to test the file download endpoint directly.
 - Read [Standardised formats](/schemas/standardised-formats) to understand the event envelope inside snapshot files.
 - Read [Trades](/schemas/trades) and [OHLCV](/schemas/ohlcv) if you plan to derive narrower views from normalized data.
 - Read [Raw API](/reference/raw-api) instead if you need venue-native payloads rather than standardized files.

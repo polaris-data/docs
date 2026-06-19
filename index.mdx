@@ -1,57 +1,83 @@
 ---
-title: "Polaris docs"
-sidebarTitle: "Overview"
-description: "Docs for accessing Polaris market data through snapshots, REST endpoints, and SDKs."
+title: "Introduction"
+sidebarTitle: "Introduction"
+description: "Introduction to Polaris, a market data platform for discovering, downloading, and querying frontier market datasets."
 ---
 
-Polaris is a market data platform for frontier venues across crypto derivatives, RWAs, and compute markets. It captures exchange-native events at the source and exposes both raw payloads and standardised schemas so you can build research and production pipelines without rewriting venue-specific logic.
+Polaris is a market data platform for frontier venues across crypto derivatives, RWAs, and compute markets. It gives you one place to discover supported venues, inspect exact market identifiers, download historical files, and query recent market activity without rebuilding venue-specific ingestion from scratch.
 
-If you are new to Polaris, do not start by reading every page. Follow one path: get access, choose a market, download one file, then branch into the schema or endpoint docs you actually need.
+## What Polaris is
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  Go from API key to your first snapshot download.
-</Card>
+Use Polaris when you need to:
 
-<Card title="Choose the right data" icon="git-branch" href="/guides/choose-the-right-data">
-  Compare snapshots, REST endpoints, standardised formats, and raw payloads.
-</Card>
+- Discover which exchanges, assets, and time ranges are available right now.
+- Download historical snapshot files for bulk research and ingestion.
+- Query recent trades, events, and OHLCV bars over REST.
+- Inspect raw exchange-native payloads when replayability matters.
+- Reuse the same access model across the CLI, REST API, and SDKs.
 
-<Card title="Connecting" icon="key-round" href="/guides/connect">
-  Set up authentication and reuse the same API key across surfaces.
-</Card>
+## Why teams use Polaris
 
-<Card title="Catalog" icon="database" href="/reference/catalog">
-  Discover supported exchanges, assets, and time bounds.
-</Card>
+Most market data work breaks down at the venue layer. Every exchange has its own identifiers, timestamp conventions, payload shapes, and quirks around history. Polaris gives you one place to:
 
-<Card title="Snapshots" icon="download" href="/reference/snapshots">
-  List and download canonical daily historical files.
-</Card>
+- Browse coverage before you build.
+- Start with public access, then add authentication only when you need more.
+- Choose the right surface for the job: CLI, snapshots, REST, raw payloads, or SDKs.
+- Move between venues without rewriting your entire parsing pipeline.
 
-<Card title="API overview" icon="braces" href="/reference/api-reference">
-  Review the main REST surfaces and jump into smaller endpoint pages.
-</Card>
+## Choose your path
 
-<Card title="Standardised formats" icon="layers" href="/schemas/standardised-formats">
-  Understand the cross-venue event envelope used across Polaris datasets.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install the Polaris CLI, open the TUI, and download your first dataset.
+  </Card>
 
-## Start here
+  <Card title="Browse Datasets" icon="git-branch" href="/guides/choose-the-right-data">
+    Compare snapshots, REST endpoints, standardised formats, and raw payloads.
+  </Card>
 
-1. Run the [Quickstart](/quickstart).
-2. Confirm auth in [Connecting](/guides/connect).
-3. Validate market coverage in [Catalog](/reference/catalog).
-4. Choose between [Snapshots](/reference/snapshots) and the [API](/reference/api-reference).
+  <Card title="Authentication" icon="key-round" href="/guides/authentication">
+    Learn when public access is enough and when bearer auth actually matters.
+  </Card>
 
-## What Polaris helps you do
+  <Card title="Catalog" icon="database" href="/reference/catalog">
+    Discover supported exchanges, exact asset IDs, and available time bounds.
+  </Card>
 
-- Query recent trades, events, and OHLCV over REST.
-- Download bulk historical snapshots for standardized datasets.
-- Inspect raw exchange-native payloads when you need replayability or custom parsing.
-- Use the same API key across the REST API and SDKs.
+  <Card title="Snapshots" icon="download" href="/reference/snapshots">
+    List and download canonical historical files for standardized datasets.
+  </Card>
 
-## Next steps
+  <Card title="API Overview" icon="braces" href="/reference/api-reference">
+    Explore the main REST surfaces and jump into endpoint-specific docs.
+  </Card>
 
-- Open [Quickstart](/quickstart) if you want the fastest path to first data.
-- Open [Choose the right data](/guides/choose-the-right-data) if you are not sure which surface to use.
-- Open [Market coverage](/markets/market-coverage) if you want a high-level view of supported venue categories.
+  <Card title="Python SDK" icon="code" href="/sdks/python">
+    Use `polaris_data` to discover markets, fetch datasets, and replay data locally.
+  </Card>
+
+  <Card title="Standardised Formats" icon="layers" href="/schemas/standardised-formats">
+    Understand the normalized cross-venue event envelope used across Polaris datasets.
+  </Card>
+</CardGroup>
+
+## Recommended first path
+
+1. Start with [Quickstart](/quickstart) if you want the fastest route to first data.
+2. Open [Browse Datasets](/guides/choose-the-right-data) if you are choosing between snapshots, REST, and raw payloads.
+3. Use [Catalog](/reference/catalog) to confirm exact `exchange` and `asset` pairs.
+4. Branch into [Snapshots](/reference/snapshots), the [API Overview](/reference/api-reference), or the [Python SDK](/sdks/python) once you know the workflow you need.
+
+## Typical workflows
+
+- Use the CLI when you want the fastest path to browsing and downloading data.
+- Use snapshots when you need bulk historical files for research, backfills, or ingestion.
+- Use REST when you want recent trades, events, or OHLCV bars on demand.
+- Use raw payloads when you need exchange-native fields for replay or validation.
+- Use the Python SDK when you want a notebook or local analysis workflow.
+
+## Support and resources
+
+- Use [Market Coverage](/markets/market-coverage) for a live high-level view of currently listed exchanges.
+- Use [Jupyter Notebook Quickstart](/guides/jupyter-notebook-quickstart) if you want a notebook-first Python workflow.
+- Use [Authentication](/guides/authentication) when you need explicit historical ranges or access beyond the public window.
