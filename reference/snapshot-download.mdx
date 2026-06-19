@@ -1,0 +1,63 @@
+---
+title: "Snapshot download"
+sidebarTitle: "Snapshot Download"
+description: "Download a single standardized snapshot file by key."
+api: "GET /snapshots/download"
+---
+
+Use `GET /snapshots/download` when you already have a snapshot `key` from [Snapshots](/reference/snapshots) and want to fetch the file itself.
+
+## Endpoint
+
+`GET /snapshots/download`
+
+## Parameters
+
+<ParamField query="key" type="string" required>
+  Snapshot key returned by `GET /snapshots`, such as `snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst`.
+</ParamField>
+
+<ParamField query="filename" type="string">
+  Optional override for the suggested download filename.
+</ParamField>
+
+<ParamField query="mode" type="string">
+  Optional response mode. Use `url` or `json` to receive JSON with a pre-signed URL instead of a redirect.
+</ParamField>
+
+## Access behavior
+
+- Bearer auth is only required when the dataset access policy for the snapshot requires it.
+- Accepted key formats include the full `.jsonl.zst` suffix or the same key without it.
+- `mode=url` and `mode=json` both return JSON with `url`, `filename`, and `expires_in_seconds`.
+
+## Response fields
+
+<ResponseField name="redirect" type="string">
+  The endpoint typically responds with a redirect to the downloadable snapshot file.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Pre-signed download URL when you request `mode=url` or `mode=json`.
+</ResponseField>
+
+<ResponseField name="filename" type="string">
+  Suggested filename for the artifact.
+</ResponseField>
+
+<ResponseField name="expires_in_seconds" type="number">
+  Lifetime of the pre-signed URL.
+</ResponseField>
+
+## Example
+
+```bash
+curl -L \
+  "https://api.polaris.supply/snapshots/download?key=snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst" \
+  -o hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst
+```
+
+## Next steps
+
+- Read [Snapshots](/reference/snapshots) if you need to list available files before downloading one.
+- Read [Standardised formats](/schemas/standardised-formats) to understand the event envelope inside snapshot files.

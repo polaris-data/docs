@@ -8,55 +8,96 @@
     "dark": "#1349C5"
   },
   "favicon": "/favicon.svg",
+  "api": {
+    "mdx": {
+      "server": "https://api.polaris.supply",
+      "auth": {
+        "method": "bearer"
+      }
+    },
+    "playground": {
+      "display": "interactive"
+    },
+    "params": {
+      "expanded": "closed"
+    },
+    "url": "full",
+    "examples": {
+      "languages": [
+        "curl",
+        "python",
+        "javascript"
+      ],
+      "defaults": "required",
+      "prefill": true,
+      "autogenerate": true
+    }
+  },
   "navigation": {
     "pages": [
       {
-        "group": "Start Here",
+        "group": "Getting Started",
         "pages": [
           "index",
           "quickstart",
-          "guides/connect",
+          "guides/authentication",
           "guides/choose-the-right-data"
         ]
       },
       {
-        "group": "Access Data",
-        "expanded": false,
+        "group": "Reference",
         "pages": [
-          "reference/api-reference",
-          "reference/authentication",
-          "reference/catalog",
-          "reference/snapshots",
-          "reference/trades-api",
-          "reference/events-api",
-          "reference/ohlcv-api",
-          "reference/raw-api"
+          {
+            "group": "API Reference",
+            "pages": [
+              "reference/api-reference",
+              "reference/authentication",
+              "reference/catalog",
+              "reference/snapshots",
+              "reference/snapshot-download",
+              "reference/trades-api",
+              "reference/events-api",
+              "reference/ohlcv-api",
+              "reference/raw-api"
+            ]
+          },
+          {
+            "group": "SDK Reference",
+            "expanded": false,
+            "pages": [
+              "sdks/python",
+              "sdks/rust"
+            ]
+          },
+          {
+            "group": "Schema Reference",
+            "expanded": false,
+            "pages": [
+              "schemas/standardised-formats",
+              "schemas/trades",
+              "schemas/market-events",
+              "schemas/ohlcv",
+              "schemas/raw-payloads"
+            ]
+          }
         ]
       },
       {
-        "group": "Schemas",
+        "group": "Resources",
         "expanded": false,
         "pages": [
-          "schemas/standardised-formats",
-          "schemas/trades",
-          "schemas/market-events",
-          "schemas/ohlcv",
-          "schemas/raw-payloads"
-        ]
-      },
-      {
-        "group": "SDKs",
-        "expanded": false,
-        "pages": [
-          "sdks/python",
-          "sdks/rust"
-        ]
-      },
-      {
-        "group": "Markets",
-        "expanded": false,
-        "pages": [
-          "markets/market-coverage"
+          {
+            "group": "Workflows",
+            "pages": [
+              "guides/jupyter-notebook-quickstart"
+            ]
+          },
+          {
+            "group": "Coverage",
+            "pages": [
+              "markets/market-coverage"
+            ]
+          }
         ]
       }
     ],

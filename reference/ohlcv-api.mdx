@@ -2,6 +2,7 @@
 title: "OHLCV API"
 sidebarTitle: "OHLCV API"
 description: "Query interval-aligned OHLCV bars from the Polaris OHLCV endpoint."
+api: "GET /ohlcv"
 ---
 
 Use `GET /ohlcv` when you want interval-based bar data instead of raw executions.
@@ -17,18 +18,94 @@ Use `GET /ohlcv` when you want interval-based bar data instead of raw executions
 | `exchange` | Yes | Exchange ID |
 | `asset` | Yes | Normalized asset or instrument ID |
 | `interval` | Yes | Duration token such as `1m`, `5m`, or `1h` |
-| `format` | No | Supports `tradingview` |
-| `limit` | No | Page size |
-| `cursor` | No | Opaque pagination token |
-| `from` | No | Explicit start time; usually requires bearer auth |
-| `to` | No | Explicit end time; usually requires bearer auth |
+| `format` | No | Supports `http`, `file`, or `tradingview` |
+| `from` | No | Explicit start time; requires bearer auth |
+| `to` | No | Explicit end time; requires bearer auth |
 
-## Access behavior
+## Parameters
+
+<ParamField query="exchange" type="string" required>
+  Exchange ID.
+</ParamField>
+
+<ParamField query="asset" type="string" required>
+  Exact Polaris asset or instrument ID.
+</ParamField>
+
+<ParamField query="interval" type="string" required>
+  Duration token such as `100ms`, `1s`, `10s`, `1m`, `5m`, `15m`, or `1h`.
+</ParamField>
+
+<ParamField query="format" type="string">
+  Optional response format. Omit for JSON, use `file` for a `.jsonl.zst` export redirect, or use `tradingview` for TradingView-compatible JSON.
+</ParamField>
+
+<ParamField query="from" type="string">
+  Inclusive UTC start time in ISO 8601 format. Requires bearer auth.
+</ParamField>
+
+<ParamField query="to" type="string">
+  Exclusive UTC end time in ISO 8601 format. Requires bearer auth.
+</ParamField>
+
+## Auth and defaults
 
 | Mode | Behavior |
 | --- | --- |
-| No API key | Limited to the latest 6 hours and latest 50 bars |
-| With API key | Supports broader historical queries and custom time bounds |
+| No bearer auth | `from` and `to` are rejected. The server uses the latest 6-hour window and returns only the latest 50 bars. |
+| With bearer auth | `from` and `to` are allowed. If you omit them, the server defaults to a recent 24-hour lookback ending at `now`. |
+
+## Response fields
+
+<ResponseField name="format" type="string">
+  JSON responses return `http`.
+</ResponseField>
+
+<ResponseField name="data" type="object[]">
+  OHLCV bars for the requested interval.
+</ResponseField>
+
+<ResponseField name="next_cursor" type="string">
+  Always `null` for the default OHLCV JSON response.
+</ResponseField>
+
+<ResponseField name="has_more" type="boolean">
+  Always `false` for the default OHLCV JSON response.
+</ResponseField>
+
+<ResponseField name="candles" type="object[]">
+  TradingView candle points when `format=tradingview`.
+</ResponseField>
+
+<ResponseField name="volumes" type="object[]">
+  TradingView volume points when `format=tradingview`.
+</ResponseField>
+
+## Python SDK
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    bars = client.ohlcv(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+        interval="1m",
+    )
+
+print(bars[:2])
+```
+
+## File exports
+
+If you set `format=file`, the endpoint returns a `302` redirect to a `.jsonl.zst` export of the generated OHLCV bars.
 
 ## Next steps
 

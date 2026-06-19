@@ -1,7 +1,16 @@
 ---
 title: "Python SDK"
 sidebarTitle: "Python SDK"
-description: "Install the Polaris Python client and authenticate with your existing API key."
+description: "Install the Polaris Python client, discover markets, and query trades, events, snapshots, replay data, and OHLCV bars."
+keywords:
+  - Python SDK
+  - polaris_data
+  - PolarisClient
+  - Jupyter notebook
+  - pandas
+  - Hyperliquid
+  - trades
+  - OHLCV
 ---
 
 The Polaris Python SDK is available on PyPI as [`polaris-data`](https://pypi.org/project/polaris-data/).
@@ -12,6 +21,18 @@ The Polaris Python SDK is available on PyPI as [`polaris-data`](https://pypi.org
 pip install polaris-data
 ```
 
+If you use `uv`, install it into a project with:
+
+```bash
+uv add polaris-data
+```
+
+Or install it into the active environment with:
+
+```bash
+uv pip install polaris-data
+```
+
 ## Authentication
 
 Use the same Polaris API key you use for REST requests.
@@ -20,10 +41,225 @@ Use the same Polaris API key you use for REST requests.
 export POLARIS_API_KEY="pk_live_your_key"
 ```
 
-See [Connecting](/guides/connect) for the shared auth model.
+See [Authentication](/guides/authentication) for the shared auth model.
+
+## Quickstart
+
+Use `replay(...)` when you want to stream historical rows in a notebook, script, or backfill job.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient(api_key="pk_live_your_key") as client:
+    row_count = sum(
+        1
+        for _ in client.replay(
+            exchange="binance",
+            asset="BTC-USDT",
+            from_="2024-01-01T00:00:00Z",
+            to="2024-01-01T01:00:00Z",
+        )
+    )
+    print(f"Replayed {row_count} rows")
+```
+
+## Create a client
+
+If you omit `api_key`, the client reads `POLARIS_API_KEY` from the environment.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    print(client.health())
+```
+
+The main constructor is:
+
+```python
+PolarisClient(
+    api_key=None,
+    base_url="https://api.polaris.supply",
+    timeout=30.0,
+    dataset_root=None,
+)
+```
+
+## Core methods
+
+Use `PolarisClient` for discovery, historical replay, and direct query workflows.
+
+| Method | Returns | Use it for |
+| --- | --- | --- |
+| `health()` | JSON object | Confirm API availability |
+| `catalog(exchange=None, asset=None)` | JSON object | Discover exchanges and exact asset IDs |
+| `list_snapshots(exchange, asset, from_, to, limit=1000)` | List of snapshot entries | Find snapshot files for a range |
+| `replay(exchange, asset, from_, to, standard=True)` | Iterator of rows | Stream historical data for replay or backfills |
+| `events(exchange, asset, from_, to, limit=1000)` | List of normalized events | Load mixed event types into scripts or notebooks |
+| `trades(exchange, asset, from_, to, limit=1000)` | List of normalized trades | Analyze executions |
+| `raw(exchange, asset, from_, to, limit=1000)` | List of raw payloads | Inspect exchange-native messages |
+| `ohlcv(exchange, asset, from_, to, interval, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
+
+`from_` and `to` accept ISO 8601 strings, `datetime`, `date`, or Unix epoch microseconds.
+
+For historical event queries, `standard=True` is the default on `replay(...)`. Pass `standard=False` when you explicitly want raw schema payloads through replay.
+
+## Discover a market before you query it
+
+Use `catalog(...)` to find the exact Polaris asset ID for a venue.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    catalog = client.catalog(exchange="hyperliquid")
+    assets = [asset["id"] for asset in catalog["exchanges"][0]["assets"]]
+    print(assets[:10])
+```
+
+Do not guess asset names. For example, the Hyperliquid market you might describe as "SpaceX" is exposed as `SPX`.
+
+## Query events
+
+Use `events(...)` when you want standardized historical event rows beyond trades alone.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient(api_key="pk_live_your_key") as client:
+    rows = client.events(
+        exchange="binance",
+        asset="BTC-USDT",
+        from_="2024-01-01T00:00:00Z",
+        to="2024-01-01T01:00:00Z",
+    )
+
+print(len(rows))
+print(rows[0])
+```
+
+## Query trades
+
+`trades(...)` returns a list of normalized trade events. The SDK handles pagination and snapshot-backed historical reads for you.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=1)
+
+with PolarisClient() as client:
+    trades = client.trades(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+    )
+
+print(trades[0])
+```
+
+## Query OHLCV bars
+
+Use `ohlcv(...)` when you want interval bars instead of individual trades.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    bars = client.ohlcv(
+        exchange="hyperliquid",
+        asset="SPX",
+        from_=start,
+        to=end,
+        interval="1m",
+    )
+
+print(bars[0])
+```
+
+If you pass `format="tradingview"`, `ohlcv(...)` returns TradingView-style candle and volume arrays.
+
+## Local dataset storage
+
+The SDK stores standardized snapshots and local day files under a shared Polaris app-data root so the Python SDK and CLI can reuse the same files.
+
+Default roots:
+
+- macOS: `~/Library/Application Support/polaris`
+- Linux: `$XDG_DATA_HOME/polaris` or `~/.local/share/polaris`
+- Windows: `%APPDATA%\polaris`
+
+Within that root, the SDK uses this layout:
+
+```text
+<root>/
+  data/
+  daily/
+  tmp/
+  cache/
+  locks/
+```
+
+Pass `dataset_root=...` to `PolarisClient(...)` to override the root explicitly.
+
+- `POLARIS_ROOT` overrides the shared root globally.
+- `POLARIS_DATASET_DOWNLOAD_DIR` is still accepted as a deprecated compatibility override.
+
+## Snapshot-first replay
+
+For standardized historical data, `replay(...)`, `events(...)`, `trades(...)`, and default or TradingView `ohlcv(...)` prefer `/snapshots` and `/snapshots/download`, then read local day files when they already exist.
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient(api_key="pk_live_your_key") as client:
+    for row in client.replay(
+        exchange="binance",
+        asset="BTC-USDT",
+        from_="2024-01-01T00:00:00Z",
+        to="2024-01-01T01:00:00Z",
+    ):
+        print(row)
+```
+
+If the requested standardized range cannot be satisfied from daily snapshots, the SDK falls back to the legacy `/events?format=file` flow for standardized replay, event, trade, and local OHLCV derivation.
+
+## Error handling
+
+```python
+from polaris_data import PolarisClient, RateLimitedError, UnauthorizedError
+
+client = PolarisClient()
+
+try:
+    client.replay(
+        exchange="binance",
+        asset="BTC-USDT",
+        from_="2024-01-01T00:00:00Z",
+        to="2024-01-01T01:00:00Z",
+    )
+except UnauthorizedError:
+    print("API key is required")
+except RateLimitedError as err:
+    print(f"Rate limited. Reset at: {err.reset_at}")
+```
+
+## Notebook workflow
+
+If you want a notebook that discovers a market, loads a DataFrame, and plots a chart, start with [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart).
 
 ## Next steps
 
+- Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook-ready workflow with pandas and matplotlib.
+- Read [Catalog](/reference/catalog) before you hardcode exchange and asset IDs.
 - Read [Authentication](/reference/authentication) if you want the shared request model behind the SDK.
 - Read [Snapshots](/reference/snapshots) if your Python workflow starts from historical files.
 - Read [Trades API](/reference/trades-api) if you need the endpoint behavior the SDK wraps.
