@@ -29,6 +29,10 @@ Run this in a notebook cell:
 
 ## Set your API key
 
+These examples use explicit `from_` and `to` ranges, so you need `POLARIS_API_KEY`.
+
+If you want to stay on the public path, omit `from_` and `to` and use the recent public window instead.
+
 Use the same API key you use for REST requests.
 
 ```python
@@ -73,6 +77,11 @@ with PolarisClient() as client:
         asset="SPX",
         from_=start,
         to=end,
+    )
+
+if not trades:
+    raise ValueError(
+        "No trades returned. Add POLARIS_API_KEY for ranged queries, move the time window, or confirm the asset ID with catalog."
     )
 
 df = pd.DataFrame(trades)
@@ -137,6 +146,11 @@ with PolarisClient() as client:
         from_=start,
         to=end,
         interval="1m",
+    )
+
+if not bars:
+    raise ValueError(
+        "No OHLCV bars returned. Add POLARIS_API_KEY for ranged queries, move the time window, or confirm the asset ID with catalog."
     )
 
 bars_df = pd.DataFrame(bars)

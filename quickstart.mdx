@@ -15,6 +15,8 @@ Before you begin, you need:
 
 You do not need an API key for the first-run flow.
 
+Use [Catalog](/reference/catalog) to confirm the exact asset ID before you query or download data. Asset IDs are venue-specific. For Hyperliquid, use canonical IDs such as `BTC`.
+
 ## Install and run Polaris
 
 <Steps>
@@ -38,7 +40,7 @@ You do not need an API key for the first-run flow.
     If you prefer plain CLI output, inspect a specific dataset directly.
 
     ```bash
-    polaris catalog --exchange hyperliquid --asset BTCUSDT
+    polaris catalog --exchange hyperliquid --asset BTC
     ```
   </Step>
 
@@ -48,7 +50,7 @@ You do not need an API key for the first-run flow.
     ```bash
     polaris download \
       --exchange hyperliquid \
-      --asset BTCUSDT \
+      --asset BTC \
       --from 2026-06-01T00:00:00Z \
       --to 2026-06-02T00:00:00Z
     ```
@@ -58,7 +60,7 @@ You do not need an API key for the first-run flow.
     Confirm what Polaris downloaded locally.
 
     ```bash
-    polaris list --exchange hyperliquid --asset BTCUSDT
+    polaris list --exchange hyperliquid --asset BTC
     ```
   </Step>
 </Steps>
