@@ -1,0 +1,59 @@
+---
+title: "Catalog metadata"
+sidebarTitle: "Catalog Metadata"
+description: "Response schema for catalog discovery results, including exchanges, assets, and access metadata."
+---
+
+Catalog metadata is the response shape returned by `GET /catalog`. Use it to discover valid exchanges, canonical asset IDs, coverage windows, and dataset access status before you query data.
+
+## Top-level fields
+
+- `exchanges`: matching exchanges after any optional filters
+- `updatedAt`: UTC timestamp for the catalog snapshot
+
+## Exchange entry
+
+- `id`: normalized exchange identifier
+- `assets`: matching market entries for that exchange
+
+## Asset entry
+
+- `id`: canonical Polaris asset ID to reuse in later requests
+- `start`: earliest available UTC timestamp for the market
+- `end`: latest available UTC timestamp for the market
+- `source`: metadata source, such as `manifest`
+- `categories`: dataset categories available for that market
+- `access.status`: dataset access state, such as `open`, `preview`, or `restricted`
+- `access.public_cutoff_date`: latest UTC date available without gated access when a public cutoff exists
+
+Example:
+
+```json
+{
+  "exchanges": [
+    {
+      "id": "derive",
+      "assets": [
+        {
+          "id": "SOL-USD",
+          "start": "2026-05-01T00:15:00.000Z",
+          "end": "2026-05-07T23:45:00.000Z",
+          "source": "manifest",
+          "categories": ["perp", "options"],
+          "access": {
+            "status": "preview",
+            "public_cutoff_date": "2026-05-28"
+          }
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-05-19T10:28:00.000Z"
+}
+```
+
+## Next steps
+
+- Read [Catalog](/reference/catalog) for request parameters and filtering behavior.
+- Read [Snapshot metadata](/schemas/snapshot-metadata) if you want the list response that follows a validated market.
+- Read [Authentication](/guides/authentication) if you want catalog visibility that matches your account tier.

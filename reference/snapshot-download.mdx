@@ -8,6 +8,8 @@ authMethod: "none"
 
 Use `GET /snapshots/download` when you already have a snapshot `key` from [Snapshots](/reference/snapshots) and want to fetch the file itself.
 
+This endpoint does not require an `Authorization` header for open datasets.
+
 ## Endpoint
 
 `GET /snapshots/download`
@@ -32,6 +34,11 @@ Use `GET /snapshots/download` when you already have a snapshot `key` from [Snaps
 - Accepted key formats include the full `.jsonl.zst` suffix or the same key without it.
 - `mode=url` and `mode=json` both return JSON with `url`, `filename`, and `expires_in_seconds`.
 
+## Related schemas
+
+- [Snapshot metadata](/schemas/snapshot-metadata)
+- [Standardised formats](/schemas/standardised-formats)
+
 ## Response fields
 
 <ResponseField name="redirect" type="string">
@@ -49,6 +56,8 @@ Use `GET /snapshots/download` when you already have a snapshot `key` from [Snaps
 <ResponseField name="expires_in_seconds" type="number">
   Lifetime of the pre-signed URL.
 </ResponseField>
+
+The downloaded `.jsonl.zst` file contains standardized event records. See [Standardised formats](/schemas/standardised-formats) for the event envelope inside the file.
 
 ## Example
 

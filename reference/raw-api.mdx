@@ -67,10 +67,34 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 - Audit parser behavior
 - Maintain your own venue-specific normalization
 
+## Related schema
+
+- [Raw payloads](/schemas/raw-payloads)
+
 ## Response fields
 
 <ResponseField name="data" type="object[]" required>
   Exchange-native payloads for the requested market and time range.
+</ResponseField>
+
+<ResponseField name="data.timestamp" type="number">
+  Event time in UTC microseconds when the raw capture uses the Polaris raw envelope.
+</ResponseField>
+
+<ResponseField name="data.venue" type="string">
+  Source exchange identifier when the raw capture uses the Polaris raw envelope.
+</ResponseField>
+
+<ResponseField name="data.symbol" type="string">
+  Venue-native or normalized symbol carried by the raw capture.
+</ResponseField>
+
+<ResponseField name="data.type" type="string">
+  Raw message category when the raw capture uses the Polaris raw envelope.
+</ResponseField>
+
+<ResponseField name="data.data" type="object">
+  Exchange-native payload body. Field names and nesting vary by venue.
 </ResponseField>
 
 <ResponseField name="next_cursor" type="string">
@@ -129,5 +153,5 @@ print(rows[:2])
 ## Next steps
 
 - Read [Raw payloads](/schemas/raw-payloads) for an example of the message shape.
-- Read [Authentication](/reference/authentication) before making authenticated raw queries.
+- Read [Authentication](/guides/authentication) before making authenticated raw queries.
 - Read [Standardised formats](/schemas/standardised-formats) if you decide you want the normalized alternative.

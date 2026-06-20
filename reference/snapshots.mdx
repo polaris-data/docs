@@ -8,6 +8,8 @@ authMethod: "none"
 
 Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
 
+`GET /snapshots` is a public listing endpoint. You do not need an `Authorization` header to browse available snapshot files.
+
 ## Preferred historical workflow
 
 1. Use [Catalog](/reference/catalog) to choose a valid `exchange` and `asset`.
@@ -53,9 +55,14 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 
 ## Notes
 
-- Listing does not require bearer auth.
+- Listing is public and does not require bearer auth.
 - Snapshot rows only appear for UTC dates that actually have source files behind them.
 - The response includes dataset-level access metadata so you can distinguish open, preview, and restricted markets before you download.
+
+## Related schemas
+
+- [Snapshot metadata](/schemas/snapshot-metadata)
+- [Standardised formats](/schemas/standardised-formats)
 
 ## Response fields
 
@@ -71,8 +78,36 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
   Dataset access state for the requested market.
 </ResponseField>
 
+<ResponseField name="access.public_cutoff_date" type="string">
+  Latest UTC date available without gated access when a public cutoff exists.
+</ResponseField>
+
+<ResponseField name="total" type="number" required>
+  Number of snapshot entries in the response.
+</ResponseField>
+
+<ResponseField name="total_bytes" type="number" required>
+  Total size in bytes across matching source files.
+</ResponseField>
+
+<ResponseField name="limit" type="number" required>
+  Effective page size applied to the response.
+</ResponseField>
+
+<ResponseField name="has_more" type="boolean" required>
+  Whether another page of snapshot entries is available.
+</ResponseField>
+
+<ResponseField name="next_cursor" type="string">
+  Opaque pagination token for the next page, when present.
+</ResponseField>
+
 <ResponseField name="snapshots" type="object[]" required>
   Matching daily snapshot entries.
+</ResponseField>
+
+<ResponseField name="snapshots.date" type="string" required>
+  UTC date covered by the daily artifact.
 </ResponseField>
 
 <ResponseField name="snapshots.key" type="string" required>
@@ -143,7 +178,7 @@ Downloads a single standardized snapshot file by key.
 - Required: `key` from a `/snapshots` response
 - Optional: `filename` to override the suggested download name
 - Accepted key formats include the full `.jsonl.zst` suffix or the same key without it
-- Bearer auth is only required when the dataset access policy returned by `/snapshots` requires it
+- The endpoint is public for open datasets. Bearer auth is only required when the dataset access policy returned by `/snapshots` requires it.
 - `mode=url` or `mode=json` returns JSON with a pre-signed URL instead of a `302` redirect
 - For an interactive endpoint page, read [Snapshot download](/reference/snapshot-download)
 
@@ -168,6 +203,7 @@ After download, decompress the `.jsonl.zst` file locally and use it as the canon
 
 ## Next steps
 
+- Read [Snapshot metadata](/schemas/snapshot-metadata) if you want the list and download response shapes in one place.
 - Read [Snapshot download](/reference/snapshot-download) if you want to test the file download endpoint directly.
 - Read [Standardised formats](/schemas/standardised-formats) to understand the event envelope inside snapshot files.
 - Read [Trades](/schemas/trades) and [OHLCV](/schemas/ohlcv) if you plan to derive narrower views from normalized data.
