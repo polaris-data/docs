@@ -1,23 +1,23 @@
 ---
 title: "Create a Jupyter notebook with polaris_data"
 sidebarTitle: "Jupyter Notebook Quickstart"
-description: "Set up Jupyter, use the Polaris Python SDK to discover a market, fetch public Hyperliquid SPX trades, and plot a chart with pandas and matplotlib."
+description: "Set up Jupyter, use the Polaris Python SDK to confirm a market ID, fetch public Hyperliquid BTC OHLCV bars, and then inspect recent trades with pandas and matplotlib."
 keywords:
   - Jupyter notebook
   - Python SDK
   - polaris_data
   - Hyperliquid
-  - SPX
-  - SpaceX
+  - BTC
   - pandas
   - matplotlib
   - trades
+  - OHLCV
   - chart
 ---
 
-Use this guide when you want a notebook that discovers a market, loads data into a DataFrame, and plots it quickly.
+Use this guide when you want a notebook that confirms a market ID, loads data into a DataFrame, and plots it quickly.
 
-If you are looking for the Hyperliquid "SpaceX" market, use `SPX` as the Polaris asset ID. Use [Catalog](/reference/catalog) to confirm the exact ID before you query data.
+This walkthrough stays focused on fetching `BTC` data from `hyperliquid`. If you want a different market or venue, start with [Market Coverage](/markets/market-coverage) and then confirm the exact ID in [Catalog](/reference/catalog) before you query data.
 
 ## Start from zero
 
@@ -44,29 +44,29 @@ If you already have a notebook open, run this in a notebook cell:
 
 ## Discover the exact market ID
 
-Do not guess the asset name. Start with an exchange, list the returned asset IDs, filter by a likely ticker-style substring, then confirm the exact Polaris ID from the returned matches.
+Do not guess the asset name. Ask catalog for the exact exchange and asset pair you want to query, then inspect the returned market row before you fetch data.
 
 ```python
+import pandas as pd
 from polaris_data import PolarisClient
 
 exchange = "hyperliquid"
-search = "SPX"  # Replace this with the substring you want to inspect.
+asset = "BTC"
 
 with PolarisClient() as client:
-    catalog = client.catalog(exchange=exchange)
-    assets = [asset["id"] for asset in catalog["exchanges"][0]["assets"]]
+    market = client.catalog(exchange=exchange, asset=asset)
 
-print(assets[:20])
+exchange_row = market["exchanges"][0]
+markets_df = pd.DataFrame(exchange_row["assets"])
 
-matches = [asset for asset in assets if search.upper() in asset.upper()]
-print(matches)
+display(markets_df[["id", "start", "end"]])
 ```
 
-Use one of the exact IDs returned in `matches` for later queries. If `matches` is empty, inspect the full `assets` list instead of guessing. On Hyperliquid, the market some users describe as "SpaceX" is exposed as `SPX`.
+Use the exact `id` returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `exchange` and `asset` pair you want.
 
-## Fetch recent public trades first
+## Fetch recent public OHLCV first
 
-Use `trades(...)` with no API key and no `from_` or `to` when the recent public window is enough.
+Use `ohlcv(...)` with no API key and no `from_` or `to` when you want the most reliable first chart from the recent public window.
 
 ```python
 import matplotlib.pyplot as plt
@@ -74,29 +74,77 @@ import pandas as pd
 from polaris_data import PolarisClient
 
 with PolarisClient() as client:
-    trades = client.trades(exchange="hyperliquid", asset="SPX")
+    bars = client.ohlcv(
+        exchange="hyperliquid",
+        asset="BTC",
+        interval="1m",
+    )
+
+if not bars:
+    raise ValueError(
+        "No OHLCV bars returned. Confirm the exact Polaris asset ID, check the recent public window, or try the authenticated ranged query below."
+    )
+
+print(bars[0])
+
+bars_df = pd.DataFrame(bars)
+bars_df["time"] = pd.to_datetime(bars_df["timestamp"], unit="us", utc=True)
+
+display(bars_df.head())
+```
+
+```python
+bars_df.plot(
+    x="time",
+    y="close",
+    figsize=(12, 5),
+    legend=False,
+    title="Hyperliquid BTC close",
+)
+plt.xlabel("Time (UTC)")
+plt.ylabel("Close")
+plt.tight_layout()
+plt.show()
+```
+
+This gives you a fast first chart with a liquid default market and a simple notebook-friendly bar shape.
+
+## Use trades when you need execution detail
+
+Use `trades(...)` after the bar chart when you want execution-level detail instead of interval bars.
+
+```python
+import matplotlib.pyplot as plt
+import pandas as pd
+from polaris_data import PolarisClient
+
+with PolarisClient() as client:
+    trades = client.trades(
+        exchange="hyperliquid",
+        asset="BTC",
+    )
 
 if not trades:
     raise ValueError(
-        "No trades returned. Confirm the exact Polaris asset ID, check the recent public window, or try the authenticated ranged query below."
+        "No trades returned. Confirm the exact Polaris asset ID, check the recent public window, or switch back to OHLCV for a faster market view."
     )
 
 print(trades[0])
 
-df = pd.DataFrame(trades)
-df["time"] = pd.to_datetime(df["timestamp"], unit="us", utc=True)
-df["price"] = df["data"].map(lambda row: row["price"])
-df["quantity"] = df["data"].map(lambda row: row["quantity"])
-df["side"] = df["data"].map(lambda row: row["side"])
+trades_df = pd.DataFrame(trades)
+trades_df["time"] = pd.to_datetime(trades_df["timestamp"], unit="us", utc=True)
+trades_df["price"] = trades_df["data"].map(lambda row: row["price"])
+trades_df["quantity"] = trades_df["data"].map(lambda row: row["quantity"])
+trades_df["side"] = trades_df["data"].map(lambda row: row["side"])
 
-display(df.head())
+display(trades_df.head())
 ```
 
 ```python
 fig, ax = plt.subplots(figsize=(12, 5))
 
-buy_trades = df[df["side"] == "buy"]
-sell_trades = df[df["side"] == "sell"]
+buy_trades = trades_df[trades_df["side"] == "buy"]
+sell_trades = trades_df[trades_df["side"] == "sell"]
 
 ax.scatter(
     buy_trades["time"],
@@ -113,7 +161,7 @@ ax.scatter(
     label="Sell",
 )
 
-ax.set_title("Hyperliquid SPX trades")
+ax.set_title("Hyperliquid BTC trades")
 ax.set_xlabel("Time (UTC)")
 ax.set_ylabel("Price")
 ax.legend()
@@ -122,11 +170,11 @@ plt.tight_layout()
 plt.show()
 ```
 
-This gives you a simple trade plot where marker size reflects executed quantity.
+Use this path when you need execution detail. Stay with `ohlcv(...)` when you only need a quick market view.
 
 ## Use an API key for explicit time ranges
 
-Add `POLARIS_API_KEY` when you want an explicit time range instead of the recent public window.
+Add `POLARIS_API_KEY` when you want the notebook to run an explicit ranged query instead of relying on the recent public window.
 
 ```python
 import os
@@ -137,72 +185,33 @@ from polaris_data import PolarisClient
 os.environ["POLARIS_API_KEY"] = "pk_live_your_key"
 
 end = datetime.now(timezone.utc)
-start = end - timedelta(hours=2)
-
-with PolarisClient() as client:
-    trades = client.trades(
-        exchange="hyperliquid",
-        asset="SPX",
-        from_=start,
-        to=end,
-    )
-
-if not trades:
-    raise ValueError(
-        "No trades returned for this range. Move the time window, confirm the asset ID, or verify that your access policy covers the requested data."
-    )
-
-print(trades[0])
-```
-
-After this cell, rerun the DataFrame and plotting cells above to analyze the authenticated ranged result set.
-
-## Use OHLCV when you want a fast price chart
-
-Use `ohlcv(...)` when you want a quick candle or line chart instead of individual trades.
-
-```python
-import matplotlib.pyplot as plt
-import pandas as pd
-from polaris_data import PolarisClient
+start = end - timedelta(hours=6)
 
 with PolarisClient() as client:
     bars = client.ohlcv(
         exchange="hyperliquid",
-        asset="SPX",
+        asset="BTC",
+        from_=start,
+        to=end,
         interval="1m",
     )
 
-if not bars:
-    raise ValueError(
-        "No OHLCV bars returned. Confirm the asset ID, check the recent public window, or switch to an authenticated ranged query."
-    )
-
 print(bars[0])
-
-bars_df = pd.DataFrame(bars)
-bars_df["time"] = pd.to_datetime(bars_df["timestamp"], unit="us", utc=True)
-
-bars_df.plot(x="time", y="close", figsize=(12, 5), legend=False, title="Hyperliquid SPX close")
-plt.xlabel("Time (UTC)")
-plt.ylabel("Close")
-plt.tight_layout()
-plt.show()
 ```
 
-Use this path when you need a quick market view. Switch back to `trades(...)` when you need execution detail.
+After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze the ranged result set. Apply the same `from_` and `to` pattern to `trades(...)` when you need execution-level detail for a specific window.
 
 ## What the SDK returns
 
 - `catalog(...)` returns a JSON object with exchanges and exact asset IDs.
-- `trades(...)` returns a list of normalized trade events.
 - `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`.
+- `trades(...)` returns a list of normalized trade events.
 - `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
 
 ## Troubleshooting
 
 <Tip>
-  If you see `No trades returned` or `No OHLCV bars returned`, check the exact Polaris asset ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty.
+  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris asset ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty.
 </Tip>
 
 ## Next steps
