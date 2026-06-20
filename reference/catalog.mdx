@@ -16,6 +16,8 @@ keywords:
 
 Use catalog to discover exchange and asset availability before you build data requests.
 
+`GET /catalog` is a public endpoint. You do not need an `Authorization` header for standard catalog lookups.
+
 ## Base URL
 
 All examples use `https://api.polaris.supply`.
@@ -36,6 +38,10 @@ Returns exchange coverage with assets, per-asset UTC bounds, dataset categories,
 <ParamField query="asset" type="string">
   Exact market identifier to filter within the selected exchange. Requires `exchange`.
 </ParamField>
+
+## Related schema
+
+- [Catalog metadata](/schemas/catalog-metadata)
 
 ## Response fields
 
@@ -61,6 +67,22 @@ Returns exchange coverage with assets, per-asset UTC bounds, dataset categories,
 
 <ResponseField name="exchanges.assets.end" type="string" required>
   Latest available UTC timestamp for the market.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.source" type="string" required>
+  Metadata source for the market entry, such as `manifest`.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.categories" type="string[]" required>
+  Dataset categories available for the market.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.access.status" type="string" required>
+  Access state for the market, such as `open`, `preview`, or `restricted`.
+</ResponseField>
+
+<ResponseField name="exchanges.assets.access.public_cutoff_date" type="string">
+  Latest UTC date available without gated access when a public cutoff exists.
 </ResponseField>
 
 <ResponseField name="updatedAt" type="string" required>
@@ -104,7 +126,7 @@ Response shape:
 - Confirm that an `exchange` and `asset` pair is valid before making data requests.
 - Check the earliest and latest available timestamps for a market.
 - Inspect dataset category coverage for a market before you design downstream jobs.
-- Send bearer auth when you want catalog visibility that matches your account tier. Unauthenticated requests use the public catalog view.
+- Send bearer auth only when you want catalog visibility that matches your account tier. Unauthenticated requests use the public catalog view.
 
 ## Use exact Polaris asset IDs
 
@@ -142,6 +164,7 @@ with PolarisClient() as client:
 ## Next steps
 
 - Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook workflow that starts from catalog and ends with a chart.
+- Read [Catalog metadata](/schemas/catalog-metadata) if you want the response shape in one place.
 - Read [Snapshots](/reference/snapshots) if you want bulk historical files for a market you just validated.
 - Read [Trades API](/reference/trades-api) if you want to query recent normalized events directly.
 - Read [Market coverage](/markets/market-coverage) if you want a broader view of supported venue categories.

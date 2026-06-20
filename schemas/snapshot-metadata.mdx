@@ -1,0 +1,67 @@
+---
+title: "Snapshot metadata"
+sidebarTitle: "Snapshot Metadata"
+description: "Response schema for snapshot listings and download URL payloads."
+---
+
+Snapshot metadata is the response shape returned by `GET /snapshots` and the JSON mode of `GET /snapshots/download`. It tells you which daily artifacts exist and how to fetch them.
+
+## Snapshot list fields
+
+- `exchange`: exchange you queried
+- `asset`: asset you queried
+- `access.status`: dataset access state for that market
+- `access.public_cutoff_date`: latest UTC date available without gated access when a cutoff exists
+- `total`: number of snapshot entries returned for the request range
+- `total_bytes`: total size in bytes across matching source files
+- `limit`: effective page size
+- `has_more`: whether another page exists
+- `next_cursor`: opaque pagination token for the next page
+- `snapshots`: matching daily snapshot entries
+
+## Snapshot entry
+
+- `date`: UTC date covered by the artifact
+- `key`: canonical snapshot key for `GET /snapshots/download`
+- `filename`: suggested local filename
+
+Example:
+
+```json
+{
+  "exchange": "hyperliquid",
+  "asset": "BTC-USD",
+  "access": {
+    "status": "preview",
+    "public_cutoff_date": "2026-05-02"
+  },
+  "total": 2,
+  "total_bytes": 987654321,
+  "limit": 2,
+  "has_more": false,
+  "next_cursor": null,
+  "snapshots": [
+    {
+      "date": "2026-05-07",
+      "key": "snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst",
+      "filename": "hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst"
+    }
+  ]
+}
+```
+
+## Download URL payload
+
+If you call `GET /snapshots/download` with `mode=url` or `mode=json`, the endpoint returns:
+
+- `url`: pre-signed download URL
+- `filename`: suggested filename
+- `expires_in_seconds`: URL lifetime in seconds
+
+The downloaded `.jsonl.zst` file contains standardized event records. See [Standardised formats](/schemas/standardised-formats) for the event envelope used inside the file.
+
+## Next steps
+
+- Read [Snapshots](/reference/snapshots) for listing behavior and access rules.
+- Read [Snapshot download](/reference/snapshot-download) for direct download behavior.
+- Read [Standardised formats](/schemas/standardised-formats) for the event records stored inside each snapshot file.

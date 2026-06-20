@@ -1,40 +1,49 @@
 ---
 title: "OHLCV"
 sidebarTitle: "OHLCV"
-description: "Deterministic candle aggregations with fixed UTC interval boundaries."
+description: "Direct OHLCV bar shapes for the endpoint and the related bar payload used in normalized event streams."
 ---
 
 OHLCV data is interval-aligned and deterministic. Candle boundaries are fixed to UTC intervals, which keeps joins and cross-venue aggregation consistent.
 
-## Bar payload
+## JSON bar shape from `GET /ohlcv`
 
-- `data.open`, `data.high`, `data.low`, `data.close`: interval prices
-- `data.volume`: traded base volume for the bar
-- `data.interval`: duration token such as `1m`, `5m`, or `1h`
+- `timestamp`: bar open time in UTC microseconds since Unix epoch
+- `open`, `high`, `low`, `close`: interval prices
+- `volume`: traded base volume for the bar
+- `trades`: number of trades aggregated into the bar
+- `interval`: duration token such as `1m`, `5m`, or `1h`
 
 Example:
 
 ```json
 {
   "timestamp": 1767225660000000,
-  "venue": "hyperliquid",
-  "symbol": "BTC-USD",
-  "type": "bar",
-  "data": {
-    "interval": "1m",
-    "open": 64290.2,
-    "high": 64310.5,
-    "low": 64271.1,
-    "close": 64302.0,
-    "volume": 38.47
-  }
+  "open": 64290.2,
+  "high": 64310.5,
+  "low": 64271.1,
+  "close": 64302.0,
+  "volume": 38.47,
+  "trades": 124,
+  "interval": "1m"
 }
 ```
 
-For endpoint parameters such as `interval` and `format=tradingview`, see the [OHLCV API](/reference/ohlcv-api).
+## TradingView format
+
+If you request `format=tradingview`, the endpoint returns:
+
+- `candles[].time`: Unix seconds
+- `candles[].open`, `candles[].high`, `candles[].low`, `candles[].close`
+- `volumes[].time`: Unix seconds
+- `volumes[].value`: bar volume
+
+## Bar payload inside normalized event streams
+
+When OHLCV appears inside `/events` or snapshot files, it uses the standard event envelope described in [Standardised formats](/schemas/standardised-formats). In that case, the bar-specific fields live under the nested `data` object.
 
 ## Next steps
 
-- Read [OHLCV API](/reference/ohlcv-api) for request parameters and limits.
+- Read [OHLCV API](/reference/ohlcv-api) for request parameters and response formats.
 - Read [Trades](/schemas/trades) if you need execution-level records instead of interval aggregations.
-- Read [Snapshots](/reference/snapshots) if you want bulk historical standardized files.
+- Read [Standardised formats](/schemas/standardised-formats) if you need the normalized event envelope used in snapshots and mixed event streams.

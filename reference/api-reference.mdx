@@ -4,13 +4,13 @@ sidebarTitle: "API Overview"
 description: "Choose the right Polaris REST endpoint and jump into smaller endpoint-specific reference pages."
 ---
 
-Polaris provides REST endpoints at `https://api.polaris.supply`. You do not need to memorize the whole surface at once. Choose the endpoint family that matches your task, then read the smaller page for that endpoint.
+Polaris provides REST endpoints at `https://api.polaris.supply`. Most reference endpoints are public. Add bearer auth only when you need broader historical access, account-tier visibility, or a dataset policy that requires it. Choose the endpoint family that matches your task, then read the smaller page for that endpoint.
 
 ## Start with the right endpoint
 
 | Task | Page |
 | --- | --- |
-| Authenticate requests and understand shared request patterns | [Authentication](/reference/authentication) |
+| Understand when you need a token and how bearer auth works | [Authentication](/guides/authentication) |
 | Discover valid exchanges, assets, and time bounds | [Catalog](/reference/catalog) |
 | Download bulk historical standardized files | [Snapshots](/reference/snapshots) |
 | Query recent normalized trade events | [Trades API](/reference/trades-api) |
@@ -22,23 +22,23 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. You do not need
 
 ### Metadata
 
-- `GET /catalog`
+- `GET /catalog` for public market discovery, with optional account-tier visibility when you send bearer auth
 
 ### Historical files
 
-- `GET /snapshots`
-- `GET /snapshots/download`
+- `GET /snapshots` for public snapshot listing
+- `GET /snapshots/download` for public or policy-gated file download, depending on the dataset
 
 ### Recent query endpoints
 
-- `GET /trades`
-- `GET /events`
-- `GET /ohlcv`
+- `GET /trades` for public recent trades, with bearer auth for explicit historical bounds
+- `GET /events` for public recent event streams, with bearer auth for explicit historical bounds
+- `GET /ohlcv` for public recent bars, with bearer auth for explicit historical bounds
 - `GET /raw`
 
-## Common response pattern
+## Common response patterns
 
-`/trades`, `/events`, `/raw`, and `/ohlcv` return paginated responses:
+`/trades`, `/events`, and `/raw` return paginated JSON responses:
 
 ```json
 {
@@ -48,14 +48,16 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. You do not need
 }
 ```
 
+`/ohlcv` returns a simpler JSON envelope with `format`, `data`, `next_cursor`, and `has_more`, or a TradingView-shaped payload when you request `format=tradingview`.
+
 ## Recommended reading order
 
-1. [Authentication](/reference/authentication)
+1. [Authentication](/guides/authentication)
 2. [Catalog](/reference/catalog)
 3. [Snapshots](/reference/snapshots) or one of the recent query endpoint pages
 
 ## Next steps
 
-- Read [Authentication](/reference/authentication) if you are about to make your first request.
+- Read [Authentication](/guides/authentication) if you are about to make your first request.
 - Read [Browse datasets](/guides/choose-the-right-data) if you are deciding between snapshots and direct API queries.
 - Read [Trades API](/reference/trades-api) if you want the simplest recent-data endpoint.
