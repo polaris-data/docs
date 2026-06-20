@@ -10,10 +10,7 @@
   "favicon": "/favicon.svg",
   "api": {
     "mdx": {
-      "server": "https://api.polaris.supply",
-      "auth": {
-        "method": "bearer"
-      }
+      "server": "https://api.polaris.supply"
     },
     "playground": {
       "display": "interactive"
