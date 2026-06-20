@@ -85,7 +85,7 @@
         "expanded": false,
         "pages": [
           {
-            "group": "Workflows",
+            "group": "Guides",
             "pages": [
               "guides/jupyter-notebook-quickstart"
             ]
