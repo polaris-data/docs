@@ -18,8 +18,8 @@ Use `GET /ohlcv` when you want interval-based bar data instead of raw executions
 
 | Parameter | Required | Notes |
 | --- | --- | --- |
-| `exchange` | Yes | Exchange ID |
-| `asset` | Yes | Normalized asset or instrument ID |
+| `source` | Yes | Source ID |
+| `market` | Yes | Normalized market or instrument ID |
 | `interval` | Yes | Duration token such as `1m`, `5m`, or `1h` |
 | `format` | No | Supports `http`, `file`, or `tradingview` |
 | `from` | No | Explicit start time; available with bearer auth |
@@ -27,12 +27,12 @@ Use `GET /ohlcv` when you want interval-based bar data instead of raw executions
 
 ## Parameters
 
-<ParamField query="exchange" type="string" required>
-  Exchange ID.
+<ParamField query="source" type="string" required>
+  Source ID.
 </ParamField>
 
-<ParamField query="asset" type="string" required>
-  Exact Polaris asset or instrument ID.
+<ParamField query="market" type="string" required>
+  Exact Polaris market or instrument ID.
 </ParamField>
 
 <ParamField query="interval" type="string" required>
@@ -160,8 +160,8 @@ start = end - timedelta(hours=6)
 
 with PolarisClient() as client:
     bars = client.ohlcv(
-        exchange="hyperliquid",
-        asset="SPX",
+        source="hyperliquid",
+        market="SPX",
         from_=start,
         to=end,
         interval="1m",

@@ -19,7 +19,7 @@ Most teams do not need every Polaris surface on day one. Start by choosing the f
 | Surface | Best for | What you get | Tradeoff |
 | --- | --- | --- | --- |
 | Standardised formats | Cross-venue analytics, features, and ingestion pipelines | One canonical event envelope across venues | You do not keep venue-native field names |
-| Raw payloads | Replayability, parser audits, custom normalization | Unmodified exchange-native messages | You must handle venue-specific schemas yourself |
+| Raw payloads | Replayability, parser audits, custom normalization | Unmodified venue-native messages | You must handle venue-specific schemas yourself |
 | Snapshots | Bulk historical ingestion | Daily `.jsonl.zst` files for standardized datasets | Not the best fit for low-latency recent polling |
 | REST endpoints | Recent queries, scripts, product features | Direct API access to trades, events, OHLCV, raw, and metadata | You must page through responses and manage query flow yourself |
 
@@ -43,11 +43,11 @@ Start with [Catalog](/reference/catalog), then choose the query shape that match
 
 ### If you are debugging venue behavior
 
-Start with [Raw API](/reference/raw-api). Use raw payloads when you need exact source messages or you are maintaining custom parsers.
+Start with [Raw API](/reference/raw-api). Use raw payloads when you need exact venue-native messages or you are maintaining custom parsers.
 
 ### If you are unsure what a market supports
 
-Start with [Catalog](/reference/catalog). It tells you which `exchange` and `asset` pairs are valid and shows historical bounds.
+Start with [Catalog](/reference/catalog). It tells you which `source` and `market` pairs are valid and shows historical bounds.
 
 ## Recommended first path
 

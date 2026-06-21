@@ -18,8 +18,8 @@ Use `GET /events` when you want more than just trade executions. This endpoint r
 
 | Parameter | Required | Notes |
 | --- | --- | --- |
-| `exchange` | Yes | Exchange ID |
-| `asset` | Yes | Normalized asset or instrument ID |
+| `source` | Yes | Source ID |
+| `market` | Yes | Normalized market or instrument ID |
 | `limit` | No | Defaults to `200` without auth and `1000` with auth |
 | `cursor` | No | Opaque pagination token |
 | `from` | No | Explicit start time; available with bearer auth |
@@ -28,12 +28,12 @@ Use `GET /events` when you want more than just trade executions. This endpoint r
 
 ## Parameters
 
-<ParamField query="exchange" type="string" required>
-  Exchange ID.
+<ParamField query="source" type="string" required>
+  Source ID.
 </ParamField>
 
-<ParamField query="asset" type="string" required>
-  Exact Polaris asset or instrument ID.
+<ParamField query="market" type="string" required>
+  Exact Polaris market or instrument ID.
 </ParamField>
 
 <ParamField query="limit" type="number">
@@ -92,7 +92,7 @@ Use `GET /events` when you want more than just trade executions. This endpoint r
 </ResponseField>
 
 <ResponseField name="data.venue" type="string" required>
-  Normalized exchange identifier for the event.
+  Normalized venue identifier for the event.
 </ResponseField>
 
 <ResponseField name="data.symbol" type="string" required>
@@ -199,8 +199,8 @@ start = end - timedelta(hours=1)
 
 with PolarisClient() as client:
     events = client.events(
-        exchange="hyperliquid",
-        asset="SPX",
+        source="hyperliquid",
+        market="SPX",
         from_=start,
         to=end,
     )

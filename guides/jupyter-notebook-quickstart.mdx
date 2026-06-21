@@ -44,25 +44,25 @@ If you already have a notebook open, run this in a notebook cell:
 
 ## Discover the exact market ID
 
-Do not guess the asset name. Ask catalog for the exact exchange and asset pair you want to query, then inspect the returned market row before you fetch data.
+Do not guess the market name. Ask catalog for the exact source and market pair you want to query, then inspect the returned market row before you fetch data.
 
 ```python
 import pandas as pd
 from polaris_data import PolarisClient
 
-exchange = "hyperliquid"
-asset = "BTC"
+source = "hyperliquid"
+market = "BTC"
 
 with PolarisClient() as client:
-    market = client.catalog(exchange=exchange, asset=asset)
+    catalog_result = client.catalog(source=source, market=market)
 
-exchange_row = market["exchanges"][0]
-markets_df = pd.DataFrame(exchange_row["assets"])
+source_row = catalog_result["sources"][0]
+markets_df = pd.DataFrame(source_row["markets"])
 
 display(markets_df[["id", "start", "end"]])
 ```
 
-Use the exact `id` returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `exchange` and `asset` pair you want.
+Use the exact `id` returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `source` and `market` pair you want.
 
 ## Fetch recent public OHLCV first
 
@@ -75,14 +75,14 @@ from polaris_data import PolarisClient
 
 with PolarisClient() as client:
     bars = client.ohlcv(
-        exchange="hyperliquid",
-        asset="BTC",
+        source="hyperliquid",
+        market="BTC",
         interval="1m",
     )
 
 if not bars:
     raise ValueError(
-        "No OHLCV bars returned. Confirm the exact Polaris asset ID, check the recent public window, or try the authenticated ranged query below."
+        "No OHLCV bars returned. Confirm the exact Polaris market ID, check the recent public window, or try the authenticated ranged query below."
     )
 
 print(bars[0])
@@ -120,13 +120,13 @@ from polaris_data import PolarisClient
 
 with PolarisClient() as client:
     trades = client.trades(
-        exchange="hyperliquid",
-        asset="BTC",
+        source="hyperliquid",
+        market="BTC",
     )
 
 if not trades:
     raise ValueError(
-        "No trades returned. Confirm the exact Polaris asset ID, check the recent public window, or switch back to OHLCV for a faster market view."
+        "No trades returned. Confirm the exact Polaris market ID, check the recent public window, or switch back to OHLCV for a faster market view."
     )
 
 print(trades[0])
@@ -189,8 +189,8 @@ start = end - timedelta(hours=6)
 
 with PolarisClient() as client:
     bars = client.ohlcv(
-        exchange="hyperliquid",
-        asset="BTC",
+        source="hyperliquid",
+        market="BTC",
         from_=start,
         to=end,
         interval="1m",
@@ -203,7 +203,7 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 
 ## What the SDK returns
 
-- `catalog(...)` returns a JSON object with exchanges and exact asset IDs. See [Catalog metadata](/schemas/catalog-metadata).
+- `catalog(...)` returns a JSON object with sources and exact market IDs. See [Catalog metadata](/schemas/catalog-metadata).
 - `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`. See [OHLCV](/schemas/ohlcv).
 - `trades(...)` returns a list of normalized trade events. See [Trades](/schemas/trades).
 - `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
@@ -211,12 +211,12 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 ## Troubleshooting
 
 <Tip>
-  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris asset ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty.
+  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris market ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty.
 </Tip>
 
 ## Next steps
 
 - Read [Python SDK](/sdks/python) for the core client methods and method signatures.
-- Read [Catalog](/reference/catalog) to understand market discovery and exact asset naming.
+- Read [Catalog](/reference/catalog) to understand market discovery and exact market naming.
 - Read [Trades](/schemas/trades) if you want the normalized trade schema behind `trades(...)`.
 - Read [OHLCV](/schemas/ohlcv) if you want the bar schema behind `ohlcv(...)`.

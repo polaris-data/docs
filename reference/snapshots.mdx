@@ -12,7 +12,7 @@ Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
 
 ## Preferred historical workflow
 
-1. Use [Catalog](/reference/catalog) to choose a valid `exchange` and `asset`.
+1. Use [Catalog](/reference/catalog) to choose a valid `source` and `market`.
 2. Call `GET /snapshots` to list daily snapshot files.
 3. Call `GET /snapshots/download` to fetch one file by `key`.
 4. Decompress the `.jsonl.zst` file locally and treat it as the canonical normalized event source.
@@ -21,7 +21,7 @@ Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
 
 Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 
-- Required: `exchange`, `asset`
+- Required: `source`, `market`
 - Optional: `from`, `to`, `limit`, `cursor`
 - Default: `limit=200`
 - Maximum: `limit=1000`
@@ -29,12 +29,12 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 
 ## Parameters
 
-<ParamField query="exchange" type="string" required>
-  Exchange ID to query.
+<ParamField query="source" type="string" required>
+  Source ID to query.
 </ParamField>
 
-<ParamField query="asset" type="string" required>
-  Exact Polaris asset ID for the market.
+<ParamField query="market" type="string" required>
+  Exact Polaris market ID to query.
 </ParamField>
 
 <ParamField query="from" type="string">
@@ -66,12 +66,12 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 
 ## Response fields
 
-<ResponseField name="exchange" type="string" required>
-  Exchange you queried.
+<ResponseField name="source" type="string" required>
+  Source you queried.
 </ResponseField>
 
-<ResponseField name="asset" type="string" required>
-  Asset you queried.
+<ResponseField name="market" type="string" required>
+  Market you queried.
 </ResponseField>
 
 <ResponseField name="access.status" type="string" required>
@@ -130,8 +130,8 @@ start = end - timedelta(days=2)
 
 with PolarisClient() as client:
     snapshots = client.list_snapshots(
-        exchange="hyperliquid",
-        asset="BTC-USD",
+        source="hyperliquid",
+        market="BTC-USD",
         from_=start,
         to=end,
     )
@@ -143,15 +143,15 @@ for snapshot in snapshots[:2]:
 Example:
 
 ```bash
-curl "https://api.polaris.supply/snapshots?exchange=hyperliquid&asset=BTC-USD&from=2026-05-07T00:00:00Z&to=2026-05-07T03:00:00Z&limit=2"
+curl "https://api.polaris.supply/snapshots?source=hyperliquid&market=BTC-USD&from=2026-05-07T00:00:00Z&to=2026-05-07T03:00:00Z&limit=2"
 ```
 
 Response shape:
 
 ```json
 {
-  "exchange": "hyperliquid",
-  "asset": "BTC-USD",
+  "source": "hyperliquid",
+  "market": "BTC-USD",
   "access": {
     "status": "preview",
     "public_cutoff_date": "2026-05-02"
