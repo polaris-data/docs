@@ -203,9 +203,9 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 
 ## What the SDK returns
 
-- `catalog(...)` returns a JSON object with exchanges and exact asset IDs.
-- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`.
-- `trades(...)` returns a list of normalized trade events.
+- `catalog(...)` returns a JSON object with exchanges and exact asset IDs. See [Catalog metadata](/schemas/catalog-metadata).
+- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`. See [OHLCV](/schemas/ohlcv).
+- `trades(...)` returns a list of normalized trade events. See [Trades](/schemas/trades).
 - `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
 
 ## Troubleshooting
