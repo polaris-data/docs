@@ -15,7 +15,7 @@ Before you begin, you need:
 
 You do not need an API key for the first-run flow.
 
-Use [Catalog](/reference/catalog) to confirm the exact asset ID before you query or download data. Asset IDs are venue-specific. For Hyperliquid, use canonical IDs such as `BTC`.
+Use [Catalog](/reference/catalog) to confirm the exact market ID before you query or download data. Market IDs are venue-specific. For Hyperliquid, use canonical IDs such as `BTC`.
 
 ## Install and run Polaris
 
@@ -40,7 +40,7 @@ Use [Catalog](/reference/catalog) to confirm the exact asset ID before you query
     If you prefer plain CLI output, inspect a specific dataset directly.
 
     ```bash
-    polaris catalog --exchange hyperliquid --asset BTC
+    polaris catalog --source hyperliquid --market BTC
     ```
   </Step>
 
@@ -49,8 +49,8 @@ Use [Catalog](/reference/catalog) to confirm the exact asset ID before you query
 
     ```bash
     polaris download \
-      --exchange hyperliquid \
-      --asset BTC \
+      --source hyperliquid \
+      --market BTC \
       --from 2026-06-01T00:00:00Z \
       --to 2026-06-02T00:00:00Z
     ```
@@ -60,7 +60,7 @@ Use [Catalog](/reference/catalog) to confirm the exact asset ID before you query
     Confirm what Polaris downloaded locally.
 
     ```bash
-    polaris list --exchange hyperliquid --asset BTC
+    polaris list --source hyperliquid --market BTC
     ```
   </Step>
 </Steps>

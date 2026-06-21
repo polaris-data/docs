@@ -1,24 +1,24 @@
 ---
 title: "Catalog metadata"
 sidebarTitle: "Catalog Metadata"
-description: "Response schema for catalog discovery results, including exchanges, assets, and access metadata."
+description: "Response schema for catalog discovery results, including sources, markets, and access metadata."
 ---
 
-Catalog metadata is the response shape returned by `GET /catalog`. Use it to discover valid exchanges, canonical asset IDs, coverage windows, and dataset access status before you query data.
+Catalog metadata is the response shape returned by `GET /catalog`. Use it to discover valid sources, canonical market IDs, coverage windows, and dataset access status before you query data.
 
 ## Top-level fields
 
-- `exchanges`: matching exchanges after any optional filters
+- `sources`: matching sources after any optional filters
 - `updatedAt`: UTC timestamp for the catalog snapshot
 
-## Exchange entry
+## Source entry
 
-- `id`: normalized exchange identifier
-- `assets`: matching market entries for that exchange
+- `id`: normalized source identifier
+- `markets`: matching market entries for that source
 
-## Asset entry
+## Market entry
 
-- `id`: canonical Polaris asset ID to reuse in later requests
+- `id`: canonical Polaris market ID to reuse in later requests
 - `start`: earliest available UTC timestamp for the market
 - `end`: latest available UTC timestamp for the market
 - `source`: metadata source, such as `manifest`
@@ -30,10 +30,10 @@ Example:
 
 ```json
 {
-  "exchanges": [
+  "sources": [
     {
       "id": "derive",
-      "assets": [
+      "markets": [
         {
           "id": "SOL-USD",
           "start": "2026-05-01T00:15:00.000Z",

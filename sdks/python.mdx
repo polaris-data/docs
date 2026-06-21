@@ -54,8 +54,8 @@ with PolarisClient(api_key="pk_live_your_key") as client:
     row_count = sum(
         1
         for _ in client.replay(
-            exchange="binance",
-            asset="BTC-USDT",
+            source="binance",
+            market="BTC-USDT",
             from_="2024-01-01T00:00:00Z",
             to="2024-01-01T01:00:00Z",
         )
@@ -92,13 +92,13 @@ Use `PolarisClient` for discovery, historical replay, and direct query workflows
 | Method | Returns | Use it for |
 | --- | --- | --- |
 | `health()` | JSON object | Confirm API availability |
-| `catalog(exchange=None, asset=None)` | JSON object | Discover exchanges and exact asset IDs |
-| `list_snapshots(exchange, asset, from_, to, limit=1000)` | List of snapshot entries | Find snapshot files for a range |
-| `replay(exchange, asset, from_, to, standard=True)` | Iterator of rows | Stream historical data for replay or backfills |
-| `events(exchange, asset, from_, to, limit=1000)` | List of normalized events | Load mixed event types into scripts or notebooks |
-| `trades(exchange, asset, from_, to, limit=1000)` | List of normalized trades | Analyze executions |
-| `raw(exchange, asset, from_, to, limit=1000)` | List of raw payloads | Inspect exchange-native messages |
-| `ohlcv(exchange, asset, from_, to, interval, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
+| `catalog(source=None, market=None)` | JSON object | Discover sources and exact market IDs |
+| `list_snapshots(source, market, from_, to, limit=1000)` | List of snapshot entries | Find snapshot files for a range |
+| `replay(source, market, from_, to, standard=True)` | Iterator of rows | Stream historical data for replay or backfills |
+| `events(source, market, from_, to, limit=1000)` | List of normalized events | Load mixed event types into scripts or notebooks |
+| `trades(source, market, from_, to, limit=1000)` | List of normalized trades | Analyze executions |
+| `raw(source, market, from_, to, limit=1000)` | List of raw payloads | Inspect venue-native messages |
+| `ohlcv(source, market, from_, to, interval, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
 
 `from_` and `to` accept ISO 8601 strings, `datetime`, `date`, or Unix epoch microseconds.
 
@@ -106,15 +106,15 @@ For historical event queries, `standard=True` is the default on `replay(...)`. P
 
 ## Discover a market before you query it
 
-Use `catalog(...)` to find the exact Polaris asset ID for a venue.
+Use `catalog(...)` to find the exact Polaris market ID for a venue.
 
 ```python
 from polaris_data import PolarisClient
 
 with PolarisClient() as client:
-    catalog = client.catalog(exchange="hyperliquid")
-    assets = [asset["id"] for asset in catalog["exchanges"][0]["assets"]]
-    print(assets[:10])
+    catalog = client.catalog(source="hyperliquid")
+    markets = [market["id"] for market in catalog["sources"][0]["markets"]]
+    print(markets[:10])
 ```
 
 If you want a high-level view of supported venues and example market IDs before you query the exact pair, start with [Market Coverage](/markets/market-coverage).
@@ -128,8 +128,8 @@ from polaris_data import PolarisClient
 
 with PolarisClient(api_key="pk_live_your_key") as client:
     rows = client.events(
-        exchange="binance",
-        asset="BTC-USDT",
+        source="binance",
+        market="BTC-USDT",
         from_="2024-01-01T00:00:00Z",
         to="2024-01-01T01:00:00Z",
     )
@@ -152,8 +152,8 @@ start = end - timedelta(hours=1)
 
 with PolarisClient() as client:
     trades = client.trades(
-        exchange="hyperliquid",
-        asset="SPX",
+        source="hyperliquid",
+        market="SPX",
         from_=start,
         to=end,
     )
@@ -175,8 +175,8 @@ start = end - timedelta(hours=6)
 
 with PolarisClient() as client:
     bars = client.ohlcv(
-        exchange="hyperliquid",
-        asset="SPX",
+        source="hyperliquid",
+        market="SPX",
         from_=start,
         to=end,
         interval="1m",
@@ -222,8 +222,8 @@ from polaris_data import PolarisClient
 
 with PolarisClient(api_key="pk_live_your_key") as client:
     for row in client.replay(
-        exchange="binance",
-        asset="BTC-USDT",
+        source="binance",
+        market="BTC-USDT",
         from_="2024-01-01T00:00:00Z",
         to="2024-01-01T01:00:00Z",
     ):
@@ -241,8 +241,8 @@ client = PolarisClient()
 
 try:
     client.replay(
-        exchange="binance",
-        asset="BTC-USDT",
+        source="binance",
+        market="BTC-USDT",
         from_="2024-01-01T00:00:00Z",
         to="2024-01-01T01:00:00Z",
     )
@@ -259,7 +259,7 @@ If you want a notebook that discovers a market, loads a DataFrame, and plots a c
 ## Next steps
 
 - Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook-ready workflow with pandas and matplotlib.
-- Read [Catalog](/reference/catalog) before you hardcode exchange and asset IDs.
+- Read [Catalog](/reference/catalog) before you hardcode source and market IDs.
 - Read [Authentication](/guides/authentication) if you want the shared auth model behind the SDK.
 - Read [Snapshots](/reference/snapshots) if your Python workflow starts from historical files.
 - Read [Trades API](/reference/trades-api) if you need the endpoint behavior the SDK wraps.

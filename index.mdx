@@ -10,15 +10,15 @@ Polaris is a market data platform for frontier venues across crypto derivatives,
 
 Use Polaris when you need to:
 
-- Discover which exchanges, assets, and time ranges are available right now.
+- Discover which venues, markets, and time ranges are available right now.
 - Download historical snapshot files for bulk research and ingestion.
 - Query recent trades, events, and OHLCV bars over REST.
-- Inspect raw exchange-native payloads when replayability matters.
+- Inspect raw venue-native payloads when replayability matters.
 - Reuse the same access model across the CLI, REST API, and SDKs.
 
 ## Why teams use Polaris
 
-Most market data work breaks down at the venue layer. Every exchange has its own identifiers, timestamp conventions, payload shapes, and quirks around history. Polaris gives you one place to:
+Most market data work breaks down at the venue layer. Every venue has its own identifiers, timestamp conventions, payload shapes, and quirks around history. Polaris gives you one place to:
 
 - Browse coverage before you build.
 - Start with public access, then add authentication only when you need more.
@@ -41,7 +41,7 @@ Most market data work breaks down at the venue layer. Every exchange has its own
   </Card>
 
   <Card title="Catalog" icon="database" href="/reference/catalog">
-    Discover supported exchanges, exact asset IDs, and available time bounds.
+    Discover supported venues, exact market IDs, and available time bounds.
   </Card>
 
   <Card title="Snapshots" icon="download" href="/reference/snapshots">
@@ -65,7 +65,7 @@ Most market data work breaks down at the venue layer. Every exchange has its own
 
 1. Start with [Quickstart](/quickstart) if you want the fastest route to first data.
 2. Open [Browse Datasets](/guides/choose-the-right-data) if you are choosing between snapshots, REST, and raw payloads.
-3. Use [Catalog](/reference/catalog) to confirm exact `exchange` and `asset` pairs.
+3. Use [Catalog](/reference/catalog) to confirm exact `source` and `market` pairs.
 4. Branch into [Snapshots](/reference/snapshots), the [API Overview](/reference/api-reference), or the [Python SDK](/sdks/python) once you know the workflow you need.
 
 ## Typical workflows
@@ -73,11 +73,11 @@ Most market data work breaks down at the venue layer. Every exchange has its own
 - Use the CLI when you want the fastest path to browsing and downloading data.
 - Use snapshots when you need bulk historical files for research, backfills, or ingestion.
 - Use REST when you want recent trades, events, or OHLCV bars on demand.
-- Use raw payloads when you need exchange-native fields for replay or validation.
+- Use raw payloads when you need venue-native fields for replay or validation.
 - Use the Python SDK when you want a notebook or local analysis workflow.
 
 ## Support and resources
 
-- Use [Market Coverage](/markets/market-coverage) for a live high-level view of currently listed exchanges.
+- Use [Market Coverage](/markets/market-coverage) for a live high-level view of currently listed venues.
 - Use [Jupyter Notebook Quickstart](/guides/jupyter-notebook-quickstart) if you want a notebook-first Python workflow.
 - Use [Authentication](/guides/authentication) when you need explicit historical ranges or access beyond the public window.

@@ -1,12 +1,12 @@
 ---
 title: "Raw API"
 sidebarTitle: "Raw API"
-description: "Query exchange-native payloads when you need replayability, audits, or custom parsing."
+description: "Query venue-native payloads when you need replayability, audits, or custom parsing."
 api: "GET /raw"
 authMethod: "bearer"
 ---
 
-Use `GET /raw` when you need unmodified exchange-native payloads rather than standardized records.
+Use `GET /raw` when you need unmodified venue-native payloads rather than standardized records.
 
 ## Endpoint
 
@@ -16,8 +16,8 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 
 | Parameter | Required | Notes |
 | --- | --- | --- |
-| `exchange` | Yes | Exchange ID |
-| `asset` | Yes | Market identifier |
+| `source` | Yes | Source ID |
+| `market` | Yes | Market identifier |
 | `limit` | No | Defaults to `1000`; max `10000` |
 | `cursor` | No | Opaque pagination token |
 | `from` | No | Explicit start time; defaults to a 24-hour lookback when omitted |
@@ -26,11 +26,11 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 
 ## Parameters
 
-<ParamField query="exchange" type="string" required>
-  Exchange ID.
+<ParamField query="source" type="string" required>
+  Source ID.
 </ParamField>
 
-<ParamField query="asset" type="string" required>
+<ParamField query="market" type="string" required>
   Exact market identifier for the venue.
 </ParamField>
 
@@ -63,7 +63,7 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 
 ## When to use it
 
-- Replay source messages
+- Replay venue messages
 - Audit parser behavior
 - Maintain your own venue-specific normalization
 
@@ -74,7 +74,7 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 ## Response fields
 
 <ResponseField name="data" type="object[]" required>
-  Exchange-native payloads for the requested market and time range.
+  Venue-native payloads for the requested market and time range.
 </ResponseField>
 
 <ResponseField name="data.timestamp" type="number">
@@ -82,7 +82,7 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 </ResponseField>
 
 <ResponseField name="data.venue" type="string">
-  Source exchange identifier when the raw capture uses the Polaris raw envelope.
+  Source identifier when the raw capture uses the Polaris raw envelope.
 </ResponseField>
 
 <ResponseField name="data.symbol" type="string">
@@ -94,7 +94,7 @@ Use `GET /raw` when you need unmodified exchange-native payloads rather than sta
 </ResponseField>
 
 <ResponseField name="data.data" type="object">
-  Exchange-native payload body. Field names and nesting vary by venue.
+  Venue-native payload body. Field names and nesting vary by venue.
 </ResponseField>
 
 <ResponseField name="next_cursor" type="string">
@@ -141,8 +141,8 @@ start = end - timedelta(hours=1)
 
 with PolarisClient() as client:
     rows = client.raw(
-        exchange="hyperliquid",
-        asset="SPX",
+        source="hyperliquid",
+        market="SPX",
         from_=start,
         to=end,
     )

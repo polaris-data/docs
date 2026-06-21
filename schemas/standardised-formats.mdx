@@ -4,7 +4,7 @@ sidebarTitle: "Standardised Formats"
 description: "The canonical event envelope and typed payloads used across supported venues."
 ---
 
-Standardised formats give you one schema across venues so analytics, storage, and model features can be exchange-agnostic.
+Standardised formats give you one schema across venues so analytics, storage, and model features can be venue-agnostic.
 
 ## Canonical event envelope
 
@@ -13,7 +13,7 @@ Each record is wrapped in a stable envelope with normalized identifiers and cons
 ### Core fields
 
 - `timestamp`: event time in UTC microseconds since Unix epoch
-- `venue`: normalized exchange ID, for example `hyperliquid`
+- `venue`: normalized source ID for the venue, for example `hyperliquid`
 - `symbol`: normalized instrument ID, for example `BTC-USD`
 - `type`: unified event category such as `trade`, `orderbook`, `bar`, or `datapoint`
 - `data`: typed payload for the event type
