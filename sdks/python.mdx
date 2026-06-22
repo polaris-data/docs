@@ -33,24 +33,14 @@ Or install it into the active environment with:
 uv pip install polaris-data
 ```
 
-## Authentication
-
-Use the same Polaris API key you use for REST requests.
-
-```bash
-export POLARIS_API_KEY="pk_live_your_key"
-```
-
-See [Authentication](/guides/authentication) for the shared auth model.
-
 ## Quickstart
 
-Use `replay(...)` when you want to stream historical rows in a notebook, script, or backfill job.
+Use `replay(...)` when you want to stream historical rows in a notebook, script, or backfill job. You can run this without an API key set.
 
 ```python
 from polaris_data import PolarisClient
 
-with PolarisClient(api_key="pk_live_your_key") as client:
+with PolarisClient() as client:
     row_count = sum(
         1
         for _ in client.replay(
@@ -126,7 +116,7 @@ Use `events(...)` when you want standardized historical event rows beyond trades
 ```python
 from polaris_data import PolarisClient
 
-with PolarisClient(api_key="pk_live_your_key") as client:
+with PolarisClient() as client:
     rows = client.events(
         source="binance",
         market="BTC-USDT",
@@ -220,7 +210,7 @@ For standardized historical data, `replay(...)`, `events(...)`, `trades(...)`, a
 ```python
 from polaris_data import PolarisClient
 
-with PolarisClient(api_key="pk_live_your_key") as client:
+with PolarisClient() as client:
     for row in client.replay(
         source="binance",
         market="BTC-USDT",
@@ -231,6 +221,24 @@ with PolarisClient(api_key="pk_live_your_key") as client:
 ```
 
 If the requested standardized range cannot be satisfied from daily snapshots, the SDK falls back to the legacy `/events?format=file` flow for standardized replay, event, trade, and local OHLCV derivation.
+
+## Authentication
+
+Public sources (e.g. Binance BTC-USDT) work without an API key. For premium sources, raw snapshots, or extended history, set your key via the `POLARIS_API_KEY` environment variable or pass it directly:
+
+```python
+from polaris_data import PolarisClient
+
+with PolarisClient(api_key="pk_live_your_key") as client:
+    trades = client.trades(
+        source="hyperliquid",
+        market="SPX",
+        from_="2024-01-01T00:00:00Z",
+        to="2024-01-02T00:00:00Z",
+    )
+```
+
+See [Authentication](/guides/authentication) for the full auth model.
 
 ## Error handling
 
@@ -262,4 +270,4 @@ If you want a notebook that discovers a market, loads a DataFrame, and plots a c
 - Read [Catalog](/reference/catalog) before you hardcode source and market IDs.
 - Read [Authentication](/guides/authentication) if you want the shared auth model behind the SDK.
 - Read [Snapshots](/reference/snapshots) if your Python workflow starts from historical files.
-- Read [Trades API](/reference/trades-api) if you need the endpoint behavior the SDK wraps.
+- Read [Trades](/sdks/trades), [Events](/sdks/events), or [OHLCV](/sdks/ohlcv) for detailed method documentation.

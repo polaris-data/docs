@@ -38,7 +38,14 @@
           "index",
           "quickstart",
           "guides/authentication",
-          "guides/choose-the-right-data"
+          "reference/standardised-formats",
+          "markets/market-coverage"
+        ]
+      },
+      {
+        "group": "SDKs",
+        "pages": [
+          "sdks/python"
         ]
       },
       {
@@ -51,31 +58,15 @@
               "reference/catalog",
               "reference/snapshots",
               "reference/snapshot-download",
-              "reference/trades-api",
-              "reference/events-api",
-              "reference/ohlcv-api",
               "reference/raw-api"
             ]
           },
           {
-            "group": "SDK Reference",
-            "expanded": false,
-            "pages": [
-              "sdks/python",
-              "sdks/rust"
-            ]
-          },
-          {
             "group": "Schema Reference",
-            "expanded": false,
             "pages": [
-              "schemas/catalog-metadata",
-              "schemas/snapshot-metadata",
-              "schemas/standardised-formats",
-              "schemas/trades",
-              "schemas/market-events",
-              "schemas/ohlcv",
-              "schemas/raw-payloads"
+              "sdks/events",
+              "sdks/ohlcv",
+              "sdks/trades"
             ]
           }
         ]
@@ -84,18 +75,7 @@
         "group": "Resources",
         "expanded": false,
         "pages": [
-          {
-            "group": "Guides",
-            "pages": [
-              "guides/jupyter-notebook-quickstart"
-            ]
-          },
-          {
-            "group": "Coverage",
-            "pages": [
-              "markets/market-coverage"
-            ]
-          }
+          "guides/jupyter-notebook-quickstart"
         ]
       }
     ],
