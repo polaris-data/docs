@@ -38,7 +38,15 @@
           "index",
           "quickstart",
           "guides/authentication",
-          "guides/choose-the-right-data"
+          "guides/choose-the-right-data",
+          "reference/standardised-formats",
+          "markets/market-coverage"
+        ]
+      },
+      {
+        "group": "SDKs",
+        "pages": [
+          "sdks/python"
         ]
       },
       {
@@ -51,19 +59,15 @@
               "reference/catalog",
               "reference/snapshots",
               "reference/snapshot-download",
-              "reference/raw-api",
-              "reference/standardised-formats"
+              "reference/raw-api"
             ]
           },
           {
-            "group": "SDK Reference",
-            "expanded": false,
+            "group": "Schema Reference",
             "pages": [
-              "sdks/python",
               "sdks/events",
               "sdks/ohlcv",
-              "sdks/trades",
-              "sdks/rust"
+              "sdks/trades"
             ]
           }
         ]
@@ -72,18 +76,7 @@
         "group": "Resources",
         "expanded": false,
         "pages": [
-          {
-            "group": "Guides",
-            "pages": [
-              "guides/jupyter-notebook-quickstart"
-            ]
-          },
-          {
-            "group": "Coverage",
-            "pages": [
-              "markets/market-coverage"
-            ]
-          }
+          "guides/jupyter-notebook-quickstart"
         ]
       }
     ],

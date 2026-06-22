@@ -224,15 +224,21 @@ If the requested standardized range cannot be satisfied from daily snapshots, th
 
 ## Authentication
 
-To access the full Polaris dataset (including premium sources, raw snapshots, and historical data beyond the public window), you need a Polaris API key. However, you can get started quickly with free sources and markets like Binance BTC-USDT without any authentication.
+Public sources (e.g. Binance BTC-USDT) work without an API key. For premium sources, raw snapshots, or extended history, set your key via the `POLARIS_API_KEY` environment variable or pass it directly:
 
-**Quickstart without API key:** The examples in the Quickstart, Discover a market, and Query events/trades/OHLCV sections work with public data sources and don't require an API key.
+```python
+from polaris_data import PolarisClient
 
-**When you need an API key:** For accessing other datasets, raw snapshots, or making authenticated requests, set your API key either:
-1. As an environment variable: `export POLARIS_API_KEY="pk_live_your_key"`
-2. Directly in the PolarisClient: `PolarisClient(api_key="pk_live_your_key")`
+with PolarisClient(api_key="pk_live_your_key") as client:
+    trades = client.trades(
+        source="hyperliquid",
+        market="SPX",
+        from_="2024-01-01T00:00:00Z",
+        to="2024-01-02T00:00:00Z",
+    )
+```
 
-If you omit `api_key`, the client reads `POLARIS_API_KEY` from the environment. See [Authentication](/guides/authentication) for the shared auth model.
+See [Authentication](/guides/authentication) for the full auth model.
 
 ## Error handling
 
