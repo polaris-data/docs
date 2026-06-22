@@ -39,10 +39,6 @@ Returns venue coverage with markets, per-market UTC bounds, dataset categories, 
   Exact market identifier to filter within the selected source. Requires `source`.
 </ParamField>
 
-## Related schema
-
-- [Catalog metadata](/schemas/catalog-metadata)
-
 ## Response fields
 
 <ResponseField name="sources" type="object[]" required>
@@ -164,7 +160,6 @@ with PolarisClient() as client:
 ## Next steps
 
 - Read [Create a Jupyter notebook with polaris_data](/guides/jupyter-notebook-quickstart) if you want a notebook workflow that starts from catalog and ends with a chart.
-- Read [Catalog metadata](/schemas/catalog-metadata) if you want the response shape in one place.
 - Read [Snapshots](/reference/snapshots) if you want bulk historical files for a market you just validated.
 - Read [Trades API](/reference/trades-api) if you want to query recent normalized events directly.
 - Read [Market coverage](/markets/market-coverage) if you want a broader view of supported venue categories.

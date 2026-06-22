@@ -203,9 +203,9 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 
 ## What the SDK returns
 
-- `catalog(...)` returns a JSON object with sources and exact market IDs. See [Catalog metadata](/schemas/catalog-metadata).
-- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`. See [OHLCV](/schemas/ohlcv).
-- `trades(...)` returns a list of normalized trade events. See [Trades](/schemas/trades).
+- `catalog(...)` returns a JSON object with sources and exact market IDs. See [Catalog](/reference/catalog) for the response shape.
+- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`. See [OHLCV](/sdks/ohlcv).
+- `trades(...)` returns a list of normalized trade events. See [Trades](/sdks/trades).
 - `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
 
 ## Troubleshooting
@@ -218,5 +218,5 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 
 - Read [Python SDK](/sdks/python) for the core client methods and method signatures.
 - Read [Catalog](/reference/catalog) to understand market discovery and exact market naming.
-- Read [Trades](/schemas/trades) if you want the normalized trade schema behind `trades(...)`.
-- Read [OHLCV](/schemas/ohlcv) if you want the bar schema behind `ohlcv(...)`.
+- Read [Trades](/sdks/trades) if you want the normalized trade schema behind `trades(...)`.
+- Read [OHLCV](/sdks/ohlcv) if you want the bar schema behind `ohlcv(...)`.

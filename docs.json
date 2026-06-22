@@ -51,10 +51,8 @@
               "reference/catalog",
               "reference/snapshots",
               "reference/snapshot-download",
-              "reference/trades-api",
-              "reference/events-api",
-              "reference/ohlcv-api",
-              "reference/raw-api"
+              "reference/raw-api",
+              "reference/standardised-formats"
             ]
           },
           {
@@ -62,20 +60,10 @@
             "expanded": false,
             "pages": [
               "sdks/python",
+              "sdks/events",
+              "sdks/ohlcv",
+              "sdks/trades",
               "sdks/rust"
-            ]
-          },
-          {
-            "group": "Schema Reference",
-            "expanded": false,
-            "pages": [
-              "schemas/catalog-metadata",
-              "schemas/snapshot-metadata",
-              "schemas/standardised-formats",
-              "schemas/trades",
-              "schemas/market-events",
-              "schemas/ohlcv",
-              "schemas/raw-payloads"
             ]
           }
         ]
