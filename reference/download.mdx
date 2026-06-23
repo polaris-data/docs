@@ -1,0 +1,106 @@
+---
+title: "Download"
+sidebarTitle: "Download"
+description: "Download a single snapshot file by key — standard or raw, auto-detected."
+api: "GET /download"
+authMethod: "none"
+---
+
+Use `GET /download` when you already have a snapshot `key` from [Snapshots](/reference/snapshots) and want to fetch the file itself.
+
+This endpoint does not require an `Authorization` header for open datasets. Bearer auth (or machine payment) is only required when the dataset access policy for the snapshot requires it.
+
+The endpoint auto-detects whether the key refers to a **standard hourly** snapshot or a **raw** snapshot based on the key prefix.
+
+## Endpoint
+
+`GET /download`
+
+## Parameters
+
+<ParamField query="key" type="string" required>
+  Snapshot key returned by `GET /snapshots`, such as `snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst` for standard files, or a raw snapshot key from a `GET /snapshots?raw=true` listing.
+</ParamField>
+
+<ParamField query="filename" type="string">
+  Optional override for the suggested download filename.
+</ParamField>
+
+<ParamField query="mode" type="string">
+  Optional response mode. Use `url` or `json` to receive JSON with a pre-signed URL instead of a `302` redirect.
+</ParamField>
+
+## Access behavior
+
+- Bearer auth is only required when the dataset access policy for the snapshot requires it.
+- For restricted datasets, machine payment (x402 / MPP) is also accepted as an alternative to bearer auth.
+- Accepted key formats include the full `.jsonl.zst` suffix or the same key without it.
+- `mode=url` and `mode=json` both return JSON with `url`, `filename`, and `expires_in_seconds`.
+
+## Key detection
+
+The endpoint auto-detects the snapshot type by key prefix:
+
+| Key prefix | Type |
+| --- | --- |
+| `snapshots/hourly/…` | Standard hourly snapshot |
+| Other prefixes | Raw snapshot (requires paid auth) |
+
+## Related schemas
+
+- [Standardised formats](/reference/standardised-formats)
+
+## Response fields
+
+<ResponseField name="redirect" type="string">
+  The endpoint typically responds with a `302` redirect to the downloadable snapshot file.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Pre-signed download URL when you request `mode=url` or `mode=json`.
+</ResponseField>
+
+<ResponseField name="filename" type="string">
+  Suggested filename for the artifact.
+</ResponseField>
+
+<ResponseField name="expires_in_seconds" type="number">
+  Lifetime of the pre-signed URL, typically 86400 (24 hours).
+</ResponseField>
+
+The downloaded `.jsonl.zst` file contains standardized event records for standard keys, or venue-native payloads for raw keys. See [Standardised formats](/reference/standardised-formats) for the event envelope inside standard files.
+
+## Example
+
+```bash
+curl -L \
+  "https://api.polaris.supply/download?key=snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst" \
+  -o hyperliquid_BTC-USD_2026-05-07_0_standard.jsonl.zst
+```
+
+JSON mode example:
+
+```bash
+curl "https://api.polaris.supply/download?key=snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst&mode=json"
+```
+
+```json
+{
+  "url": "https://storage.polaris.supply/...",
+  "filename": "hyperliquid_BTC-USD_2026-05-07_0_standard.jsonl.zst",
+  "expires_in_seconds": 86400
+}
+```
+
+## Error behavior
+
+- `400` for a missing or invalid `key`
+- `401` when bearer auth is required by dataset policy
+- `402` when the dataset requires payment and no auth or payment is provided
+- `403` for forbidden key prefixes
+- `404` when the snapshot file is not found
+
+## Next steps
+
+- Read [Snapshots](/reference/snapshots) if you need to list available files before downloading one.
+- Read [Standardised formats](/reference/standardised-formats) to understand the event envelope inside snapshot files.
