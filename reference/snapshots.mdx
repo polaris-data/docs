@@ -122,10 +122,6 @@ Public endpoint for standardized hourly snapshot artifacts in `.jsonl.zst`.
   Snapshot key to pass to `GET /download`.
 </ResponseField>
 
-<ResponseField name="snapshots.filename" type="string" required>
-  Suggested local filename for the artifact.
-</ResponseField>
-
 ## Raw snapshots
 
 Add `raw=true` to list venue-native raw snapshot files instead of standardized hourly artifacts. This is useful when you need:
@@ -134,7 +130,7 @@ Add `raw=true` to list venue-native raw snapshot files instead of standardized h
 - Maintain your own venue-specific normalization
 - Access unmodified venue-native payloads
 
-Raw snapshot listing requires bearer auth with a paid subscription. The response uses the same shape but entries contain `date`, `key`, and `filename` without an `hour` field.
+Raw snapshot listing requires bearer auth with a paid subscription. The response uses the same shape but entries contain `date` and `key` without an `hour` field.
 
 ## Python SDK
 
@@ -155,7 +151,7 @@ with PolarisClient() as client:
     )
 
 for snapshot in snapshots[:2]:
-    print(snapshot.key, snapshot.filename)
+    print(snapshot.key)
 ```
 
 Example:
@@ -183,8 +179,7 @@ Response shape:
     {
       "date": "2026-05-07",
       "hour": 0,
-      "key": "snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst",
-      "filename": "hyperliquid_BTC-USD_2026-05-07_0_standard.jsonl.zst"
+      "key": "snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst"
     }
   ]
 }

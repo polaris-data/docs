@@ -30,7 +30,7 @@ The endpoint auto-detects whether the key refers to a **standard hourly** snapsh
 
 - Bearer auth is only required when the dataset access policy for the snapshot requires it.
 - For restricted datasets, machine payment (x402 / MPP) is also accepted as an alternative to bearer auth.
-- `mode=url` and `mode=json` both return JSON with `url`, `filename`, and `expires_in_seconds`.
+- `mode=url` and `mode=json` both return JSON with `url` and `expires_in_seconds`.
 
 ## Key detection
 
@@ -53,10 +53,6 @@ The endpoint auto-detects the snapshot type by key prefix:
 
 <ResponseField name="url" type="string">
   Pre-signed download URL when you request `mode=url` or `mode=json`.
-</ResponseField>
-
-<ResponseField name="filename" type="string">
-  Suggested filename for the artifact.
 </ResponseField>
 
 <ResponseField name="expires_in_seconds" type="number">
@@ -82,7 +78,6 @@ curl "https://api.polaris.supply/download?key=snapshots/hourly/hyperliquid/BTC-U
 ```json
 {
   "url": "https://storage.polaris.supply/...",
-  "filename": "hyperliquid_BTC-USD_2026-05-07_0_standard.jsonl.zst",
   "expires_in_seconds": 86400
 }
 ```
