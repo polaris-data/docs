@@ -119,7 +119,7 @@ Public endpoint for standardized hourly snapshot artifacts in `.jsonl.zst`.
 </ResponseField>
 
 <ResponseField name="snapshots.key" type="string" required>
-  Snapshot key to pass to `GET /download`.
+  Opaque snapshot identifier to pass to `GET /download`.
 </ResponseField>
 
 ## Raw snapshots
@@ -179,7 +179,7 @@ Response shape:
     {
       "date": "2026-05-07",
       "hour": 0,
-      "key": "snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst"
+      "key": "standard-hyperliquid-BTC-USD-2026-05-07-00"
     }
   ]
 }

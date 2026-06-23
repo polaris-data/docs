@@ -10,7 +10,7 @@ Use `GET /download` when you already have a snapshot `key` from [Snapshots](/ref
 
 This endpoint does not require an `Authorization` header for open datasets. Bearer auth (or machine payment) is only required when the dataset access policy for the snapshot requires it.
 
-The endpoint auto-detects whether the key refers to a **standard hourly** snapshot or a **raw** snapshot based on the key prefix.
+The endpoint auto-detects whether the key refers to a **standard hourly** snapshot or a **raw** snapshot based on the key prefix (`standard-` vs `raw-`).
 
 ## Endpoint
 
@@ -19,7 +19,7 @@ The endpoint auto-detects whether the key refers to a **standard hourly** snapsh
 ## Parameters
 
 <ParamField query="key" type="string" required>
-  Snapshot key returned by `GET /snapshots`, such as `snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst` for standard files, or a raw snapshot key from a `GET /snapshots?raw=true` listing.
+  Snapshot key returned by `GET /snapshots`, such as `standard-hyperliquid-BTC-USD-2026-05-07-00` for standard files, or a raw snapshot key like `raw-hyperliquid-BTC-USD-2026-05-07-000000` from a `GET /snapshots?raw=true` listing.
 </ParamField>
 
 <ParamField query="mode" type="string">
@@ -38,8 +38,8 @@ The endpoint auto-detects the snapshot type by key prefix:
 
 | Key prefix | Type |
 | --- | --- |
-| `snapshots/hourly/…` | Standard hourly snapshot |
-| Other prefixes | Raw snapshot (requires paid auth) |
+| `standard-…` | Standard hourly snapshot |
+| `raw-…` | Raw snapshot (requires paid auth) |
 
 ## Related schemas
 
@@ -65,14 +65,14 @@ The downloaded `.jsonl.zst` file contains standardized event records for standar
 
 ```bash
 curl -L \
-  "https://api.polaris.supply/download?key=snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst" \
-  -o hyperliquid_BTC-USD_2026-05-07_0_standard.jsonl.zst
+  "https://api.polaris.supply/download?key=standard-hyperliquid-BTC-USD-2026-05-07-00" \
+  -o hyperliquid_BTC-USD_2026-05-07_00.jsonl.zst
 ```
 
 JSON mode example:
 
 ```bash
-curl "https://api.polaris.supply/download?key=snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst&mode=json"
+curl "https://api.polaris.supply/download?key=standard-hyperliquid-BTC-USD-2026-05-07-00&mode=json"
 ```
 
 ```json
