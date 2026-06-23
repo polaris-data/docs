@@ -4,7 +4,7 @@ sidebarTitle: "API Overview"
 description: "Choose the right Polaris REST endpoint and jump into smaller endpoint-specific reference pages."
 ---
 
-Polaris provides REST endpoints at `https://api.polaris.supply`. Most reference endpoints are public. Add bearer auth only when you need broader historical access, account-tier visibility, or a dataset policy that requires it. Choose the endpoint family that matches your task, then read the smaller page for that endpoint.
+Polaris provides REST endpoints at `https://api.polaris.supply`. Most endpoints are public. Add bearer auth only when you need broader historical access, account-tier visibility, or a dataset policy that requires it. Choose the endpoint that matches your task, then read the smaller page for that endpoint.
 
 ## Start with the right endpoint
 
@@ -12,11 +12,8 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. Most reference 
 | --- | --- |
 | Understand when you need a token and how bearer auth works | [Authentication](/guides/authentication) |
 | Discover valid sources, markets, and time bounds | [Catalog](/reference/catalog) |
-| Download bulk historical standardized files | [Snapshots](/reference/snapshots) |
-| Query recent normalized trade events | [Trades](/sdks/trades) |
-| Query recent mixed event streams | [Events](/sdks/events) |
-| Query interval-based candles | [OHLCV](/sdks/ohlcv) |
-| Query venue-native payloads | [Raw API](/reference/raw-api) |
+| List available snapshot files (standard or raw) | [Snapshots](/reference/snapshots) |
+| Download a snapshot file by key | [Download](/reference/download) |
 
 ## Endpoint families
 
@@ -26,35 +23,35 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. Most reference 
 
 ### Historical files
 
-- `GET /snapshots` for public snapshot listing
-- `GET /snapshots/download` for public or policy-gated file download, depending on the dataset
-
-### Recent query endpoints
-
-- `GET /trades` for public recent trades, with bearer auth for explicit historical bounds
-- `GET /events` for public recent event streams, with bearer auth for explicit historical bounds
-- `GET /ohlcv` for public recent bars, with bearer auth for explicit historical bounds
-- `GET /raw`
+- `GET /snapshots` for public hourly snapshot listing. Add `raw=true` to list venue-native raw snapshot files (requires paid auth)
+- `GET /download` for public or policy-gated file download. Auto-detects standard vs raw by key prefix
 
 ## Common response patterns
 
-`/trades`, `/events`, and `/raw` return paginated JSON responses:
+`/snapshots` returns a paginated JSON response:
 
 ```json
 {
-  "data": [],
-  "next_cursor": "opaque_token_or_null",
-  "has_more": false
+  "source": "hyperliquid",
+  "market": "BTC-USD",
+  "access": { "status": "open", "public_cutoff_date": null },
+  "total": 2,
+  "total_bytes": 987654321,
+  "limit": 2,
+  "has_more": false,
+  "next_cursor": null,
+  "snapshots": []
 }
 ```
 
-`/ohlcv` returns a simpler JSON envelope with `format`, `data`, `next_cursor`, and `has_more`, or a TradingView-shaped payload when you request `format=tradingview`.
+`/download` returns a `302` redirect by default, or JSON with `url`, `filename`, and `expires_in_seconds` when you request `mode=url` or `mode=json`.
 
 ## Recommended reading order
 
 1. [Authentication](/guides/authentication)
 2. [Catalog](/reference/catalog)
-3. [Snapshots](/reference/snapshots) or one of the recent query endpoint pages
+3. [Snapshots](/reference/snapshots)
+4. [Download](/reference/download)
 
 ## Next steps
 

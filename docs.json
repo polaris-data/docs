@@ -58,8 +58,7 @@
               "reference/api-reference",
               "reference/catalog",
               "reference/snapshots",
-              "reference/snapshot-download",
-              "reference/raw-api"
+              "reference/download"
             ]
           },
           {

@@ -1,28 +1,28 @@
 ---
 title: "Snapshots"
 sidebarTitle: "Snapshots"
-description: "List and download canonical daily snapshot files for historical ingestion."
+description: "List and download canonical hourly snapshot files for historical ingestion."
 api: "GET /snapshots"
 authMethod: "none"
 ---
 
 Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
 
-`GET /snapshots` is a public listing endpoint. You do not need an `Authorization` header to browse available snapshot files.
+`GET /snapshots` is a public listing endpoint. You do not need an `Authorization` header to browse available snapshot files. Add `raw=true` to list venue-native raw snapshot files instead — this requires paid auth.
 
 ## Preferred historical workflow
 
 1. Use [Catalog](/reference/catalog) to choose a valid `source` and `market`.
-2. Call `GET /snapshots` to list daily snapshot files.
-3. Call `GET /snapshots/download` to fetch one file by `key`.
+2. Call `GET /snapshots` to list hourly snapshot files.
+3. Call [Download](/reference/download) with a `key` from the listing to fetch one file.
 4. Decompress the `.jsonl.zst` file locally and treat it as the canonical normalized event source.
 
 ## `GET /snapshots`
 
-Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
+Public endpoint for standardized hourly snapshot artifacts in `.jsonl.zst`.
 
 - Required: `source`, `market`
-- Optional: `from`, `to`, `limit`, `cursor`
+- Optional: `from`, `to`, `limit`, `cursor`, `raw`
 - Default: `limit=200`
 - Maximum: `limit=1000`
 - If `from` and `to` are omitted, the server defaults to a recent 24-hour lookback ending at `now`
@@ -53,10 +53,15 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
   Opaque pagination token from a previous response.
 </ParamField>
 
+<ParamField query="raw" type="boolean">
+  Set to `true` to list venue-native raw snapshot files instead of standardized hourly artifacts. Requires bearer auth with a paid subscription.
+</ParamField>
+
 ## Notes
 
-- Listing is public and does not require bearer auth.
-- Snapshot rows only appear for UTC dates that actually have source files behind them.
+- Standard listing is public and does not require bearer auth.
+- Raw listing (`raw=true`) requires bearer auth with a paid subscription.
+- Snapshot rows only appear for UTC hours that actually have source files behind them.
 - The response includes dataset-level access metadata so you can distinguish open, preview, and restricted markets before you download.
 
 ## Related schemas
@@ -74,7 +79,7 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 </ResponseField>
 
 <ResponseField name="access.status" type="string" required>
-  Dataset access state for the requested market.
+  Dataset access state for the requested market. One of `open`, `preview`, or `restricted`.
 </ResponseField>
 
 <ResponseField name="access.public_cutoff_date" type="string">
@@ -102,20 +107,30 @@ Public endpoint for standardized daily snapshot artifacts in `.jsonl.zst`.
 </ResponseField>
 
 <ResponseField name="snapshots" type="object[]" required>
-  Matching daily snapshot entries.
+  Matching hourly snapshot entries.
 </ResponseField>
 
 <ResponseField name="snapshots.date" type="string" required>
-  UTC date covered by the daily artifact.
+  UTC date covered by the hourly artifact, in `YYYY-MM-DD` format.
+</ResponseField>
+
+<ResponseField name="snapshots.hour" type="number" required>
+  UTC hour covered by the artifact, `0`–`23`.
 </ResponseField>
 
 <ResponseField name="snapshots.key" type="string" required>
-  Snapshot key to pass to `GET /snapshots/download`.
+  Opaque snapshot identifier to pass to `GET /download`.
 </ResponseField>
 
-<ResponseField name="snapshots.filename" type="string" required>
-  Suggested local filename for the artifact.
-</ResponseField>
+## Raw snapshots
+
+Add `raw=true` to list venue-native raw snapshot files instead of standardized hourly artifacts. This is useful when you need:
+
+- Replay venue messages for audits
+- Maintain your own venue-specific normalization
+- Access unmodified venue-native payloads
+
+Raw snapshot listing requires bearer auth with a paid subscription. The response uses the same shape but entries contain `date` and `key` without an `hour` field.
 
 ## Python SDK
 
@@ -125,7 +140,7 @@ from datetime import datetime, timedelta, timezone
 from polaris_data import PolarisClient
 
 end = datetime.now(timezone.utc)
-start = end - timedelta(days=2)
+start = end - timedelta(hours=24)
 
 with PolarisClient() as client:
     snapshots = client.list_snapshots(
@@ -136,7 +151,7 @@ with PolarisClient() as client:
     )
 
 for snapshot in snapshots[:2]:
-    print(snapshot.key, snapshot.filename)
+    print(snapshot.key)
 ```
 
 Example:
@@ -163,38 +178,17 @@ Response shape:
   "snapshots": [
     {
       "date": "2026-05-07",
-      "key": "snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst",
-      "filename": "hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst"
+      "hour": 0,
+      "key": "standard-hyperliquid-BTC-USD-2026-05-07-00"
     }
   ]
 }
 ```
 
-## `GET /snapshots/download`
-
-Downloads a single standardized snapshot file by key.
-
-- Required: `key` from a `/snapshots` response
-- Optional: `filename` to override the suggested download name
-- Accepted key formats include the full `.jsonl.zst` suffix or the same key without it
-- The endpoint is public for open datasets. Bearer auth is only required when the dataset access policy returned by `/snapshots` requires it.
-- `mode=url` or `mode=json` returns JSON with a pre-signed URL instead of a `302` redirect
-- For an interactive endpoint page, read [Snapshot download](/reference/snapshot-download)
-
-Example:
-
-```bash
-curl -L \
-  "https://api.polaris.supply/snapshots/download?key=snapshots/standard/hyperliquid/BTC-USD/2026-05-07.jsonl.zst" \
-  -o hyperliquid_BTC-USD_2026-05-07_standard.jsonl.zst
-```
-
 ## Error behavior
 
-- `400` for a missing or invalid `key`
-- `401` when bearer auth is required by dataset policy
-- `403` for forbidden key prefixes
-- `404` when the snapshot file is not found
+- `400` for a missing or invalid parameter
+- `401` when bearer auth is required for raw snapshot listing
 
 ## What to do with snapshot files
 
@@ -202,7 +196,6 @@ After download, decompress the `.jsonl.zst` file locally and use it as the canon
 
 ## Next steps
 
-- Read [Snapshot download](/reference/snapshot-download) if you want to test the file download endpoint directly.
+- Read [Download](/reference/download) to fetch a snapshot file by key.
 - Read [Standardised formats](/reference/standardised-formats) to understand the event envelope inside snapshot files.
 - Read [Trades](/sdks/trades) and [OHLCV](/sdks/ohlcv) if you plan to derive narrower views from normalized data.
-- Read [Raw API](/reference/raw-api) instead if you need venue-native payloads rather than standardized files.
