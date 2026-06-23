@@ -22,10 +22,6 @@ The endpoint auto-detects whether the key refers to a **standard hourly** snapsh
   Snapshot key returned by `GET /snapshots`, such as `snapshots/hourly/hyperliquid/BTC-USD/2026-05-07/0.jsonl.zst` for standard files, or a raw snapshot key from a `GET /snapshots?raw=true` listing.
 </ParamField>
 
-<ParamField query="filename" type="string">
-  Optional override for the suggested download filename.
-</ParamField>
-
 <ParamField query="mode" type="string">
   Optional response mode. Use `url` or `json` to receive JSON with a pre-signed URL instead of a `302` redirect.
 </ParamField>
@@ -34,7 +30,6 @@ The endpoint auto-detects whether the key refers to a **standard hourly** snapsh
 
 - Bearer auth is only required when the dataset access policy for the snapshot requires it.
 - For restricted datasets, machine payment (x402 / MPP) is also accepted as an alternative to bearer auth.
-- Accepted key formats include the full `.jsonl.zst` suffix or the same key without it.
 - `mode=url` and `mode=json` both return JSON with `url`, `filename`, and `expires_in_seconds`.
 
 ## Key detection
