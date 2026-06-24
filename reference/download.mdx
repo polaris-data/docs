@@ -23,14 +23,14 @@ The endpoint auto-detects whether the key refers to a **standard hourly** snapsh
 </ParamField>
 
 <ParamField query="mode" type="string">
-  Optional response mode. Use `url` or `json` to receive JSON with a pre-signed URL instead of a `302` redirect.
+  Optional response mode. Defaults to `redirect`, which issues a `302` to the file. Use `json` to receive a JSON body with a pre-signed URL instead of following the redirect — useful for machine clients that don't handle redirects.
 </ParamField>
 
 ## Access behavior
 
 - Bearer auth is only required when the dataset access policy for the snapshot requires it.
 - For restricted datasets, machine payment (x402 / MPP) is also accepted as an alternative to bearer auth.
-- `mode=url` and `mode=json` both return JSON with `url` and `expires_in_seconds`.
+- `mode=json` returns JSON with `url` and `expires_in_seconds` instead of redirecting.
 
 ## Key detection
 
@@ -48,11 +48,11 @@ The endpoint auto-detects the snapshot type by key prefix:
 ## Response fields
 
 <ResponseField name="redirect" type="string">
-  The endpoint typically responds with a `302` redirect to the downloadable snapshot file.
+  The default response mode. The endpoint issues a `302` redirect to the downloadable snapshot file.
 </ResponseField>
 
 <ResponseField name="url" type="string">
-  Pre-signed download URL when you request `mode=url` or `mode=json`.
+  Pre-signed download URL when you request `mode=json`.
 </ResponseField>
 
 <ResponseField name="expires_in_seconds" type="number">
