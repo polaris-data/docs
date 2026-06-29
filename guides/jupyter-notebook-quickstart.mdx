@@ -66,7 +66,7 @@ Use the exact `id` returned by catalog for later queries. If you want a differen
 
 ## Fetch recent public OHLCV first
 
-Use `ohlcv(...)` with no API key and no `from_` or `to` when you want the most reliable first chart from the recent public window.
+Use `ohlcv(...)` with no API key and no `from_` or `to` when you want the most reliable first chart from the recent public window. `from_` and `to` are optional for `ohlcv(...)` and `trades(...)`; if you omit them, the SDK uses the most recent available window up to the last 7 days of data, or the public cutoff date for preview datasets.
 
 ```python
 import matplotlib.pyplot as plt
@@ -111,7 +111,7 @@ This gives you a fast first chart with a liquid default market and a simple note
 
 ## Use trades when you need execution detail
 
-Use `trades(...)` after the bar chart when you want execution-level detail instead of interval bars.
+Use `trades(...)` after the bar chart when you want execution-level detail instead of interval bars. Like `ohlcv(...)`, `trades(...)` can omit `from_` and `to` and use the recent default window automatically.
 
 ```python
 import matplotlib.pyplot as plt
@@ -174,7 +174,7 @@ Use this path when you need execution detail. Stay with `ohlcv(...)` when you on
 
 ## Use an API key for explicit time ranges
 
-Add `POLARIS_API_KEY` when you want the notebook to run an explicit ranged query instead of relying on the recent public window.
+Add `POLARIS_API_KEY` when you want the notebook to run an explicit ranged query instead of relying on the recent public window. Explicit `from_` and `to` are now optional, so only add them when you need a specific historical window.
 
 ```python
 import os
@@ -199,7 +199,7 @@ with PolarisClient() as client:
 print(bars[0])
 ```
 
-After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze the ranged result set. Apply the same `from_` and `to` pattern to `trades(...)` when you need execution-level detail for a specific window.
+After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze the ranged result set. Apply the same optional `from_` and `to` pattern to `trades(...)` when you need execution-level detail for a specific window.
 
 ## What the SDK returns
 
@@ -211,7 +211,7 @@ After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze t
 ## Troubleshooting
 
 <Tip>
-  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris market ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty.
+  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris market ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty if you passed one explicitly.
 </Tip>
 
 ## Next steps
