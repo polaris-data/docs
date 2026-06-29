@@ -35,7 +35,7 @@ uv pip install polaris-data
 
 ## Quickstart
 
-Use `replay(...)` when you want to stream historical rows in a notebook, script, or backfill job. You can run this without an API key set.
+Use `replay(...)` when you want to stream historical rows in a notebook, script, or backfill job. You can run this without an API key set, and `from_` and `to` are optional. If you omit them, the SDK uses the most recent available window up to the last 7 days of data, or the public cutoff date for preview datasets.
 
 ```python
 from polaris_data import PolarisClient
@@ -44,8 +44,6 @@ with PolarisClient() as client:
     for row in client.replay(
         source="binance",
         market="BTC-USDT",
-        from_="2024-01-01T00:00:00Z",
-        to="2024-01-01T01:00:00Z",
     ):
         print(row)
 ```
@@ -81,13 +79,13 @@ Use `PolarisClient` for discovery, historical replay, and direct query workflows
 | `health()` | JSON object | Confirm API availability |
 | `catalog(source=None, market=None)` | JSON object | Discover sources and exact market IDs |
 | `list_snapshots(source, market, from_, to, limit=1000)` | List of snapshot entries | Find snapshot files for a range |
-| `replay(source, market, from_, to, standard=True)` | Iterator of rows | Stream historical data for replay or backfills |
-| `events(source, market, from_, to, limit=1000)` | List of normalized events | Load mixed event types into scripts or notebooks |
-| `trades(source, market, from_, to, limit=1000)` | List of normalized trades | Analyze executions |
-| `raw(source, market, from_, to, limit=1000)` | List of raw payloads | Inspect venue-native messages |
-| `ohlcv(source, market, from_, to, interval, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
+| `replay(source, market, from_=None, to=None, standard=True)` | Iterator of rows | Stream historical data for replay or backfills |
+| `events(source, market, from_=None, to=None)` | List of normalized events | Load mixed event types into scripts or notebooks |
+| `trades(source, market, from_=None, to=None)` | List of normalized trades | Analyze executions |
+| `raw(source, market, from_=None, to=None, limit=1000)` | List of raw payloads | Inspect venue-native messages |
+| `ohlcv(source, market, interval, from_=None, to=None, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
 
-`from_` and `to` accept ISO 8601 strings, `datetime`, `date`, or Unix epoch microseconds.
+`from_` and `to` accept ISO 8601 strings, `datetime`, `date`, or Unix epoch microseconds. They are optional on `replay(...)`, `events(...)`, `trades(...)`, `raw(...)`, and `ohlcv(...)`. If you omit either boundary, the SDK fills the request from the most recent available window up to the last 7 days of data, or the public cutoff date for preview datasets.
 
 For historical event queries, `standard=True` is the default on `replay(...)`. Pass `standard=False` when you explicitly want raw schema payloads through replay.
 
@@ -108,7 +106,7 @@ If you want a high-level view of supported venues and example market IDs before 
 
 ## Query events
 
-Use `events(...)` when you want standardized historical event rows beyond trades alone.
+Use `events(...)` when you want standardized historical event rows beyond trades alone. Omit `from_` and `to` to query the recent default window, or pass them explicitly when you need a fixed range.
 
 ```python
 from polaris_data import PolarisClient
@@ -117,8 +115,6 @@ with PolarisClient() as client:
     rows = client.events(
         source="binance",
         market="BTC-USDT",
-        from_="2024-01-01T00:00:00Z",
-        to="2024-01-01T01:00:00Z",
     )
 
 print(len(rows))
@@ -127,7 +123,7 @@ print(rows[0])
 
 ## Query trades
 
-`trades(...)` returns a list of normalized trade events. The SDK handles pagination and snapshot-backed historical reads for you.
+`trades(...)` returns a list of normalized trade events. The SDK handles pagination and snapshot-backed historical reads for you. `from_` and `to` are optional, so you can start with the recent default window and only add explicit boundaries when you need a specific range.
 
 ```python
 from datetime import datetime, timedelta, timezone
@@ -150,7 +146,7 @@ print(trades[0])
 
 ## Query OHLCV bars
 
-Use `ohlcv(...)` when you want interval bars instead of individual trades.
+Use `ohlcv(...)` when you want interval bars instead of individual trades. `from_` and `to` are optional here as well.
 
 ```python
 from datetime import datetime, timedelta, timezone
@@ -202,7 +198,7 @@ Pass `dataset_root=...` to `PolarisClient(...)` to override the root explicitly.
 
 ## Snapshot-first replay
 
-For standardized historical data, `replay(...)`, `events(...)`, `trades(...)`, and default or TradingView `ohlcv(...)` prefer `/snapshots` and `/snapshots/download`, then read local day files when they already exist.
+For standardized historical data, `replay(...)`, `events(...)`, `trades(...)`, and default or TradingView `ohlcv(...)` prefer `/snapshots` and `/snapshots/download`, then read local day files when they already exist. This applies whether you pass an explicit range or rely on the default recent window.
 
 ```python
 from polaris_data import PolarisClient
