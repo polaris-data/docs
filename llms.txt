@@ -41,4 +41,4 @@ Start with `Trades`, `Events`, or `OHLCV` when you already know the market and n
 - [Trades](https://docs.polaris.supply/sdks/trades.md): Query normalized trade events with `client.trades()`.
 - [Events](https://docs.polaris.supply/sdks/events.md): Query mixed normalized event streams with `client.events()`.
 - [OHLCV](https://docs.polaris.supply/sdks/ohlcv.md): Query interval-aligned OHLCV bars with `client.ohlcv()`.
-- [Create a Jupyter notebook with polaris_data](https://docs.polaris.supply/guides/jupyter-notebook-quickstart.md): End-to-end Python notebook example using pandas and matplotlib.
+- [Example Notebooks](https://docs.polaris.supply/guides/jupyter-notebook-quickstart.md): Notebook setup plus curated Polaris Python examples using pandas and matplotlib.

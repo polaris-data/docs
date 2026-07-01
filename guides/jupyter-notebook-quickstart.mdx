@@ -1,25 +1,24 @@
 ---
-title: "Create a Jupyter notebook with polaris_data"
-sidebarTitle: "Jupyter Notebook Quickstart"
-description: "Set up Jupyter, use the Polaris Python SDK to confirm a market ID, fetch public Hyperliquid BTC OHLCV bars, and then inspect recent trades with pandas and matplotlib."
+title: "Example Notebooks"
+sidebarTitle: "Example Notebooks"
+description: "Start a Polaris notebook quickly, then explore curated example notebooks for single-market trade analysis and cross-venue tracking with polaris_data."
 keywords:
   - Jupyter notebook
+  - example notebooks
   - Python SDK
   - polaris_data
-  - Hyperliquid
-  - BTC
   - pandas
   - matplotlib
-  - trades
-  - OHLCV
-  - chart
+  - Hyperliquid
+  - Dreamcash
+  - Tradexyz
 ---
 
-Use this guide when you want a notebook that confirms a market ID, loads data into a DataFrame, and plots it quickly.
+Use this page when you want a fast notebook setup and then a curated set of runnable `polaris-data` examples.
 
-This walkthrough stays focused on fetching `BTC` data from `hyperliquid`. If you want a different market or venue, start with [Market Coverage](/markets/market-coverage) and then confirm the exact ID in [Catalog](/reference/catalog) before you query data.
+The full notebook sources live in the [`polaris-data/notebooks`](https://github.com/polaris-data/notebooks) repository. Keep this docs page as the map, and use the repository when you want the full runnable analysis.
 
-## Start from zero
+## Start a notebook quickly
 
 If you do not already have Jupyter running, start in a terminal:
 
@@ -28,23 +27,18 @@ python3 -m pip install --upgrade jupyterlab ipykernel polaris-data pandas matplo
 jupyter lab
 ```
 
-Then:
-
-1. Create a new notebook in JupyterLab.
-2. Select a Python 3 kernel.
-3. Run the notebook cells below in order.
-
-## Install notebook dependencies
-
-If you already have a notebook open, run this in a notebook cell:
+If you already have a notebook open, install the basics in a cell:
 
 ```python
 %pip install polaris-data pandas matplotlib
 ```
 
-## Discover the exact market ID
+Most Polaris notebooks follow the same first pattern:
 
-Do not guess the market name. Ask catalog for the exact source and market pair you want to query, then inspect the returned market row before you fetch data.
+1. Confirm the exact `source` and `market` with `catalog(...)`.
+2. Fetch `ohlcv(...)` or `trades(...)`.
+3. Load the response into pandas.
+4. Plot or summarize the result.
 
 ```python
 import pandas as pd
@@ -55,167 +49,114 @@ market = "BTC"
 
 with PolarisClient() as client:
     catalog_result = client.catalog(source=source, market=market)
+    bars = client.ohlcv(source=source, market=market, interval="1m")
 
 markets_df = pd.DataFrame(catalog_result["markets"])
-
-display(markets_df[["market", "start", "end"]])
-```
-
-Use the exact `market` value returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `source` and `market` pair you want.
-
-## Fetch recent public OHLCV first
-
-Use `ohlcv(...)` with no API key and no `from_` or `to` when you want the most reliable first chart from the recent public window. `from_` and `to` are optional for `ohlcv(...)` and `trades(...)`; if you omit them, the SDK uses the most recent available window up to the last 7 days of data, or the public cutoff date for preview datasets.
-
-```python
-import matplotlib.pyplot as plt
-import pandas as pd
-from polaris_data import PolarisClient
-
-with PolarisClient() as client:
-    bars = client.ohlcv(
-        source="hyperliquid",
-        market="BTC",
-        interval="1m",
-    )
-
-if not bars:
-    raise ValueError(
-        "No OHLCV bars returned. Confirm the exact Polaris market ID, check the recent public window, or try the authenticated ranged query below."
-    )
-
-print(bars[0])
-
 bars_df = pd.DataFrame(bars)
 bars_df["time"] = pd.to_datetime(bars_df["timestamp"], unit="us", utc=True)
 
+display(markets_df[["market", "start", "end"]])
 display(bars_df.head())
 ```
 
+Use [Market Coverage](/markets/market-coverage) first when you need a high-level view of supported venues, then confirm the exact identifier in [Catalog](/reference/catalog) before you fetch data.
+
+## Repository overview
+
+The current example repo is intentionally small and curated:
+
+- [`hyperliquid_btc_trade_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/hyperliquid_btc_trade_analysis.ipynb): single-market walkthrough for bars, trades, and trade-flow visualization
+- [`dreamcash_tradexyz_tracking_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/dreamcash_tradexyz_tracking_analysis.ipynb): cross-venue comparison notebook for shared tickers, overlap, spread, and trade activity
+
+## Hyperliquid BTC trade analysis
+
+Open [`hyperliquid_btc_trade_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/hyperliquid_btc_trade_analysis.ipynb) when you want the most direct end-to-end SDK example.
+
+This notebook shows how to:
+
+- confirm the exact market with `catalog(...)`
+- fetch a bounded OHLCV window and the matching raw trades
+- normalize both responses into pandas DataFrames
+- summarize buy and sell flow
+- overlay trade points on the close series and chart signed flow per minute
+
+Short excerpt:
+
 ```python
-bars_df.plot(
-    x="time",
-    y="close",
-    figsize=(12, 5),
-    legend=False,
-    title="Hyperliquid BTC close",
-)
-plt.xlabel("Time (UTC)")
-plt.ylabel("Close")
-plt.tight_layout()
-plt.show()
-```
-
-This gives you a fast first chart with a liquid default market and a simple notebook-friendly bar shape.
-
-## Use trades when you need execution detail
-
-Use `trades(...)` after the bar chart when you want execution-level detail instead of interval bars. Like `ohlcv(...)`, `trades(...)` can omit `from_` and `to` and use the recent default window automatically.
-
-```python
-import matplotlib.pyplot as plt
+from polaris_data import PolarisClient
 import pandas as pd
-from polaris_data import PolarisClient
 
-with PolarisClient() as client:
-    trades = client.trades(
-        source="hyperliquid",
-        market="BTC",
-    )
-
-if not trades:
-    raise ValueError(
-        "No trades returned. Confirm the exact Polaris market ID, check the recent public window, or switch back to OHLCV for a faster market view."
-    )
-
-print(trades[0])
-
-trades_df = pd.DataFrame(trades)
-trades_df["time"] = pd.to_datetime(trades_df["timestamp"], unit="us", utc=True)
-trades_df["price"] = trades_df["data"].map(lambda row: row["price"])
-trades_df["quantity"] = trades_df["data"].map(lambda row: row["quantity"])
-trades_df["side"] = trades_df["data"].map(lambda row: row["side"])
-
-display(trades_df.head())
-```
-
-```python
-fig, ax = plt.subplots(figsize=(12, 5))
-
-buy_trades = trades_df[trades_df["side"] == "buy"]
-sell_trades = trades_df[trades_df["side"] == "sell"]
-
-ax.scatter(
-    buy_trades["time"],
-    buy_trades["price"],
-    s=buy_trades["quantity"] * 8,
-    alpha=0.5,
-    label="Buy",
-)
-ax.scatter(
-    sell_trades["time"],
-    sell_trades["price"],
-    s=sell_trades["quantity"] * 8,
-    alpha=0.5,
-    label="Sell",
-)
-
-ax.set_title("Hyperliquid BTC trades")
-ax.set_xlabel("Time (UTC)")
-ax.set_ylabel("Price")
-ax.legend()
-plt.xticks(rotation=30)
-plt.tight_layout()
-plt.show()
-```
-
-Use this path when you need execution detail. Stay with `ohlcv(...)` when you only need a quick market view.
-
-## Use an API key for explicit time ranges
-
-Add `POLARIS_API_KEY` when you want the notebook to run an explicit ranged query instead of relying on the recent public window. Explicit `from_` and `to` are now optional, so only add them when you need a specific historical window.
-
-```python
-import os
-from datetime import datetime, timedelta, timezone
-
-from polaris_data import PolarisClient
-
-os.environ["POLARIS_API_KEY"] = "pk_live_your_key"
-
-end = datetime.now(timezone.utc)
-start = end - timedelta(hours=6)
+source = "hyperliquid"
+market = "BTC"
+start = "2026-06-29T19:00:00Z"
+end = "2026-06-29T20:00:00Z"
 
 with PolarisClient() as client:
     bars = client.ohlcv(
-        source="hyperliquid",
-        market="BTC",
+        source=source,
+        market=market,
+        interval="1m",
         from_=start,
         to=end,
-        interval="1m",
+    )
+    trades = client.trades(
+        source=source,
+        market=market,
+        from_=start,
+        to=end,
     )
 
-print(bars[0])
+bars_df = pd.DataFrame(bars)
+trades_df = pd.json_normalize(trades)
 ```
 
-After this cell, rerun the OHLCV DataFrame and plotting cells above to analyze the ranged result set. Apply the same optional `from_` and `to` pattern to `trades(...)` when you need execution-level detail for a specific window.
+Use this notebook when you want to understand the core `polaris-data` workflow quickly without adding multi-market logic.
 
-## What the SDK returns
+## Dreamcash and Tradexyz tracking analysis
 
-- `catalog(...)` returns a JSON object with sources and exact market IDs. See [Catalog](/reference/catalog) for the response shape.
-- `ohlcv(...)` returns a list of bars. Each bar includes `timestamp`, `open`, `high`, `low`, `close`, `volume`, `trades`, and `interval`. See [OHLCV](/sdks/ohlcv).
-- `trades(...)` returns a list of normalized trade events. See [Trades](/sdks/trades).
-- `timestamp` values are UTC microseconds. Convert them with `pd.to_datetime(..., unit="us", utc=True)`.
+Open [`dreamcash_tradexyz_tracking_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/dreamcash_tradexyz_tracking_analysis.ipynb) when you want a broader example that compares the same ticker universe across two venues.
 
-## Troubleshooting
+This notebook shows how to:
 
-<Tip>
-  If you see `No OHLCV bars returned` or `No trades returned`, check the exact Polaris market ID from catalog, remember that the no-key path only uses the recent public window, confirm that your access policy covers the data you want, and verify that your requested time range is not empty if you passed one explicitly.
-</Tip>
+- discover the shared market universe across `dreamcash` and `tradexyz`
+- normalize venue-specific market IDs into a common ticker map
+- fetch parallel OHLCV series across multiple tickers
+- compare activity, overlap, returns, and close-price spread behavior
+- drill into trade-level detail for a focus ticker
+
+Short excerpt:
+
+```python
+from polaris_data import PolarisClient
+import pandas as pd
+
+source_a = "dreamcash"
+source_b = "tradexyz"
+selected_tickers = ["GOLD", "NVDA", "AMZN", "TSLA", "MSFT"]
+
+with PolarisClient() as client:
+    catalog = client.catalog()
+
+catalog_markets = pd.DataFrame(catalog["markets"])
+catalog_markets = catalog_markets[catalog_markets["source"].isin([source_a, source_b])].copy()
+
+shared_market_map = {}
+for _, market in catalog_markets.iterrows():
+    ticker = market["market"].replace("CASH:", "").replace("XYZ:", "")
+    shared_market_map.setdefault(ticker, {})[market["source"]] = market["market"]
+```
+
+Use this notebook when you want to show how Polaris helps compare the same symbols across venues instead of staying within one market.
+
+## Choosing the right notebook
+
+- Start with the Hyperliquid example if you want the fastest path to understanding `catalog(...)`, `ohlcv(...)`, and `trades(...)`.
+- Start with the Dreamcash and Tradexyz example if you want a richer research workflow with shared-universe discovery and cross-venue comparison.
+- Stay in the docs and read [Python SDK](/sdks/python) if you want method signatures and usage patterns before opening a notebook.
 
 ## Next steps
 
-- Read [Python SDK](/sdks/python) for the core client methods and method signatures.
-- Read [Catalog](/reference/catalog) to understand market discovery and exact market naming.
-- Read [Trades](/sdks/trades) if you want the normalized trade schema behind `trades(...)`.
-- Read [OHLCV](/sdks/ohlcv) if you want the bar schema behind `ohlcv(...)`.
+- Browse the full notebook repo at [`polaris-data/notebooks`](https://github.com/polaris-data/notebooks).
+- Read [Python SDK](/sdks/python) for the core client methods.
+- Read [Catalog](/reference/catalog) before hardcoding source and market IDs.
+- Read [OHLCV](/sdks/ohlcv) and [Trades](/sdks/trades) for the normalized response shapes behind the notebook examples.
