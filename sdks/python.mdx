@@ -98,7 +98,7 @@ from polaris_data import PolarisClient
 
 with PolarisClient() as client:
     catalog = client.catalog(source="hyperliquid")
-    markets = [market["id"] for market in catalog["sources"][0]["markets"]]
+    markets = [row["market"] for row in catalog["markets"]]
     print(markets[:10])
 ```
 
