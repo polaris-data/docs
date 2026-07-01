@@ -97,7 +97,7 @@ import { PolarisClient } from "polaris-data";
 await using client = new PolarisClient();
 
 const catalog = await client.catalog({ source: "hyperliquid" });
-const markets = catalog.sources[0].markets.map((m) => m.id);
+const markets = catalog.markets.map((m) => m.market);
 console.log(markets.slice(0, 10));
 ```
 

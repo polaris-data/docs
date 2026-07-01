@@ -56,13 +56,12 @@ market = "BTC"
 with PolarisClient() as client:
     catalog_result = client.catalog(source=source, market=market)
 
-source_row = catalog_result["sources"][0]
-markets_df = pd.DataFrame(source_row["markets"])
+markets_df = pd.DataFrame(catalog_result["markets"])
 
-display(markets_df[["id", "start", "end"]])
+display(markets_df[["market", "start", "end"]])
 ```
 
-Use the exact `id` returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `source` and `market` pair you want.
+Use the exact `market` value returned by catalog for later queries. If you want a different market or venue, browse [Market Coverage](/markets/market-coverage) first and then query [Catalog](/reference/catalog) with the exact `source` and `market` pair you want.
 
 ## Fetch recent public OHLCV first
 

@@ -24,7 +24,7 @@ All examples use `https://api.polaris.supply`.
 
 ## `GET /catalog`
 
-Returns venue coverage with markets, per-market UTC bounds, dataset categories, and access metadata.
+Returns flattened market coverage rows with per-market UTC bounds, dataset categories, and access metadata.
 
 - Optional: `source`, `market`
 - `market` requires `source`
@@ -41,43 +41,39 @@ Returns venue coverage with markets, per-market UTC bounds, dataset categories, 
 
 ## Response fields
 
-<ResponseField name="sources" type="object[]" required>
-  Sources that match the query.
+<ResponseField name="markets" type="object[]" required>
+  Market rows that match the query.
 </ResponseField>
 
-<ResponseField name="sources.id" type="string" required>
-  Source identifier.
+<ResponseField name="markets.source" type="string" required>
+  Source identifier for the venue, such as `hyperliquid`.
 </ResponseField>
 
-<ResponseField name="sources.markets" type="object[]" required>
-  Market entries for the source.
-</ResponseField>
-
-<ResponseField name="sources.markets.id" type="string" required>
+<ResponseField name="markets.market" type="string" required>
   Exact Polaris market ID to use in requests.
 </ResponseField>
 
-<ResponseField name="sources.markets.start" type="string" required>
+<ResponseField name="markets.start" type="string" required>
   Earliest available UTC timestamp for the market.
 </ResponseField>
 
-<ResponseField name="sources.markets.end" type="string" required>
+<ResponseField name="markets.end" type="string" required>
   Latest available UTC timestamp for the market.
 </ResponseField>
 
-<ResponseField name="sources.markets.source" type="string" required>
+<ResponseField name="markets.source_type" type="string" required>
   Metadata source for the market entry, such as `manifest`.
 </ResponseField>
 
-<ResponseField name="sources.markets.categories" type="string[]" required>
+<ResponseField name="markets.categories" type="string[]" required>
   Dataset categories available for the market.
 </ResponseField>
 
-<ResponseField name="sources.markets.access.status" type="string" required>
+<ResponseField name="markets.access.status" type="string" required>
   Access state for the market, such as `open`, `preview`, or `restricted`.
 </ResponseField>
 
-<ResponseField name="sources.markets.access.public_cutoff_date" type="string">
+<ResponseField name="markets.access.public_cutoff_date" type="string">
   Latest UTC date available without gated access when a public cutoff exists.
 </ResponseField>
 
@@ -95,25 +91,21 @@ Response shape:
 
 ```json
 {
-  "sources": [
+  "updatedAt": "2026-06-03T12:00:00.000Z",
+  "markets": [
     {
-      "id": "derive",
-      "markets": [
-        {
-          "id": "SOL-USD",
-          "start": "2026-05-01T00:15:00.000Z",
-          "end": "2026-05-07T23:45:00.000Z",
-          "source": "manifest",
-          "categories": ["perp", "options"],
-          "access": {
-            "status": "preview",
-            "public_cutoff_date": "2026-05-28"
-          }
-        }
-      ]
+      "source": "hyperliquid",
+      "market": "BTC-USD",
+      "start": "2026-05-01T00:15:00.000Z",
+      "end": "2026-05-07T23:45:00.000Z",
+      "source_type": "manifest",
+      "categories": ["perp"],
+      "access": {
+        "status": "open",
+        "public_cutoff_date": null
+      }
     }
-  ],
-  "updatedAt": "2026-05-19T10:28:00.000Z"
+  ]
 }
 ```
 
@@ -130,7 +122,7 @@ Catalog returns the exact market IDs you should pass to the API and SDK. Treat t
 
 - Do not assume every venue uses the same symbol format.
 - Do not assume a user-facing market name matches the Polaris market ID.
-- Filter with the exact `market` value returned by catalog.
+- Filter with the exact `market` value returned in each catalog row.
 
 For example, on Hyperliquid you might search for a market described as "SpaceX", but the Polaris market ID is `SPX`.
 
@@ -143,7 +135,7 @@ from polaris_data import PolarisClient
 
 with PolarisClient() as client:
     catalog = client.catalog(source="hyperliquid")
-    markets = [market["id"] for market in catalog["sources"][0]["markets"]]
+    markets = [row["market"] for row in catalog["markets"]]
     print(markets[:20])
 ```
 
