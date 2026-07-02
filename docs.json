@@ -51,7 +51,8 @@
         "group": "SDKs",
         "pages": [
           "sdks/python",
-          "sdks/typescript"
+          "sdks/typescript",
+          "sdks/rust"
         ]
       },
       {
