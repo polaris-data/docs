@@ -48,6 +48,14 @@
         ]
       },
       {
+        "group": "SDKs",
+        "pages": [
+          "sdks/python",
+          "sdks/typescript",
+          "sdks/rust"
+        ]
+      },
+      {
         "group": "Data Schemas",
         "pages": [
           "sdks/events",
@@ -61,14 +69,6 @@
           "sdks/vwap",
           "sdks/volatility",
           "sdks/depth-metrics"
-        ]
-      },
-      {
-        "group": "SDKs",
-        "pages": [
-          "sdks/python",
-          "sdks/typescript",
-          "sdks/rust"
         ]
       },
       {
