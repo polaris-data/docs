@@ -119,6 +119,10 @@
   "navbar": {
     "links": [
       {
+        "label": "LLMS.txt",
+        "href": "/llms.txt"
+      },
+      {
         "label": "Support",
         "href": "https://t.me/hilliamt"
       }
