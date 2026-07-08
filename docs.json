@@ -48,6 +48,14 @@
         ]
       },
       {
+        "group": "Data Schemas",
+        "pages": [
+          "sdks/events",
+          "sdks/ohlcv",
+          "sdks/trades"
+        ]
+      },
+      {
         "group": "SDKs",
         "pages": [
           "sdks/python",
@@ -65,14 +73,6 @@
               "reference/catalog",
               "reference/snapshots",
               "reference/download"
-            ]
-          },
-          {
-            "group": "Schema Reference",
-            "pages": [
-              "sdks/events",
-              "sdks/ohlcv",
-              "sdks/trades"
             ]
           }
         ]
