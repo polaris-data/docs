@@ -51,8 +51,16 @@
         "group": "Data Schemas",
         "pages": [
           "sdks/events",
+          "sdks/trades",
           "sdks/ohlcv",
-          "sdks/trades"
+          "sdks/l2-snapshots",
+          "sdks/bbo",
+          "sdks/funding-rates",
+          "sdks/mark-prices",
+          "sdks/volume",
+          "sdks/vwap",
+          "sdks/volatility",
+          "sdks/depth-metrics"
         ]
       },
       {
