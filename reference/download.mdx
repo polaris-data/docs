@@ -41,10 +41,6 @@ The endpoint auto-detects the snapshot type by key prefix:
 | `standard-…` | Standard hourly snapshot |
 | `raw-…` | Raw snapshot (requires paid auth) |
 
-## Related schemas
-
-- [Standardised formats](/reference/standardised-formats)
-
 ## Response fields
 
 <ResponseField name="redirect" type="string">
@@ -59,7 +55,7 @@ The endpoint auto-detects the snapshot type by key prefix:
   Lifetime of the pre-signed URL, typically 86400 (24 hours).
 </ResponseField>
 
-The downloaded `.jsonl.zst` file contains standardized event records for standard keys, or venue-native payloads for raw keys. See [Standardised formats](/reference/standardised-formats) for the event envelope inside standard files.
+The downloaded `.jsonl.zst` file contains standardized event records for standard keys, or venue-native payloads for raw keys.
 
 ## Example
 
@@ -93,4 +89,3 @@ curl "https://api.polaris.supply/download?key=standard-hyperliquid-BTC-USD-2026-
 ## Next steps
 
 - Read [Snapshots](/reference/snapshots) if you need to list available files before downloading one.
-- Read [Standardised formats](/reference/standardised-formats) to understand the event envelope inside snapshot files.

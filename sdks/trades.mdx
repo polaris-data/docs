@@ -53,7 +53,7 @@ List of normalized trade event dictionaries.
 
 ## Fields
 
-Trade events use the standard event envelope (see [Standardised formats](/reference/standardised-formats)) with `type: "trade"` and the following trade-specific fields under `data`:
+Trade events use the standard event envelope with `type: "trade"` and the following trade-specific fields under `data`:
 
 - `data.price`: matched execution price
 - `data.quantity`: executed size in base units
@@ -89,7 +89,6 @@ For more details on snapshot-based queries, see [Snapshots](/reference/snapshots
 
 ## Related documentation
 
-- [Standardised formats](/reference/standardised-formats) for the full event envelope trades are nested in
 - [Events](/sdks/events) if you need more than just executions
 - [OHLCV](/sdks/ohlcv) if you want interval-based aggregations derived from trade flow
 - [Raw API](/reference/raw-api) if you need venue-native trade messages instead
