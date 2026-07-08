@@ -63,7 +63,7 @@ The default response is a list of bar dictionaries with these fields:
 - `trades`: number of trades aggregated into the bar
 - `interval`: duration token such as `1m`, `5m`, or `1h`
 
-When OHLCV appears inside `/events` or snapshot files, it uses the standard event envelope (see [Standardised formats](/reference/standardised-formats)) and the bar-specific fields live under the nested `data` object.
+When OHLCV appears inside `/events` or snapshot files, it uses the standard event envelope and the bar-specific fields live under the nested `data` object.
 
 ## Example
 
@@ -120,7 +120,6 @@ For more details on snapshot-based queries, see [Snapshots](/reference/snapshots
 
 ## Related documentation
 
-- [Standardised formats](/reference/standardised-formats) for the full event envelope OHLCV bars are nested in inside event streams
 - [Trades](/sdks/trades) if you need execution-level data instead of bars
 - [Snapshots](/reference/snapshots) for bulk historical standardized files
 - [Authentication](/guides/authentication)

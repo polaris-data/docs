@@ -60,7 +60,7 @@ List of normalized order book snapshot dictionaries.
 
 ## Fields
 
-L2 snapshots use the standard event envelope (see [Standardised formats](/reference/standardised-formats)) with `type: "orderbook"` and the following order book-specific fields under `data`:
+L2 snapshots use the standard event envelope with `type: "orderbook"` and the following order book-specific fields under `data`:
 
 - `data.bids`: array of bid levels, each with `price` and `quantity`
 - `data.asks`: array of ask levels, each with `price` and `quantity`
@@ -95,7 +95,6 @@ For more details on snapshot-based queries, see [Snapshots](/reference/snapshots
 
 ## Related documentation
 
-- [Standardised formats](/reference/standardised-formats) for the full event envelope order book snapshots are nested in
 - [Depth metrics](/sdks/depth-metrics) for derived liquidity metrics
 - [BBO](/sdks/bbo) if you only need top-of-book quotes
 - [Events](/sdks/events) if you need order book updates mixed with other event types
