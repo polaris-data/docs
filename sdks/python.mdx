@@ -84,6 +84,14 @@ Use `PolarisClient` for discovery, historical replay, and direct query workflows
 | `trades(source, market, from_=None, to=None)` | List of normalized trades | Analyze executions |
 | `raw(source, market, from_=None, to=None, limit=1000)` | List of raw payloads | Inspect venue-native messages |
 | `ohlcv(source, market, interval, from_=None, to=None, format=None)` | List of bars or TradingView-style JSON | Plot fast market charts |
+| `l2_snapshots(source, market, from_=None, to=None)` | List of orderbook snapshot rows | Order book reconstruction and microstructure analysis |
+| `funding_rates(source, market, from_=None, to=None)` | List of funding-rate point series rows | Perpetual funding studies and carry modeling |
+| `mark_prices(source, market, from_=None, to=None)` | List of mark-price point series rows | Basis analysis, mark tracking, and liquidation-related research |
+| `volume(source, market, interval, from_=None, to=None)` | Bucketed trade volume series | Volume profiling and participation analysis |
+| `vwap(source, market, interval, from_=None, to=None)` | Bucketed VWAP series | Execution benchmarking and price smoothing |
+| `volatility(source, market, interval, from_=None, to=None, method="log_returns")` | Bucketed realized volatility series | Risk modeling and intraperiod volatility analysis |
+| `bbo(source, market, from_=None, to=None)` | Best bid/offer quote series | Spread tracking, quote analytics, and top-of-book monitoring |
+| `depth_metrics(source, market, from_=None, to=None, depth_pct=0.01, slippage_notional=10000.0)` | Derived depth, spread, imbalance, and slippage metrics | Liquidity analysis and market impact estimation |
 
 `from_` and `to` accept ISO 8601 strings, `datetime`, `date`, or Unix epoch microseconds. They are optional on `replay(...)`, `events(...)`, `trades(...)`, `raw(...)`, and `ohlcv(...)`. If you omit either boundary, the SDK fills the request from the most recent available window up to the last 7 days of data, or the public cutoff date for preview datasets.
 
@@ -169,6 +177,195 @@ print(bars[0])
 ```
 
 If you pass `format="tradingview"`, `ohlcv(...)` returns TradingView-style candle and volume arrays.
+
+## Query order book snapshots
+
+Use `l2_snapshots(...)` when you need order book depth data for microstructure analysis.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(minutes=5)
+
+with PolarisClient() as client:
+    snapshots = client.l2_snapshots(
+        source="binance",
+        market="BTC-USDT",
+        from_=start,
+        to=end,
+    )
+
+print(snapshots[0])
+```
+
+## Query funding rates
+
+Use `funding_rates(...)` to analyze perpetual funding rates and carry modeling.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=24)
+
+with PolarisClient() as client:
+    funding_rates = client.funding_rates(
+        source="hyperliquid",
+        market="BTC",
+        from_=start,
+        to=end,
+    )
+
+print(funding_rates[0])
+```
+
+## Query mark prices
+
+Use `mark_prices(...)` for basis analysis, mark tracking, and liquidation-related research.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=24)
+
+with PolarisClient() as client:
+    mark_prices = client.mark_prices(
+        source="hyperliquid",
+        market="BTC",
+        from_=start,
+        to=end,
+    )
+
+print(mark_prices[0])
+```
+
+## Query volume profiles
+
+Use `volume(...)` for volume profiling and participation analysis.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    volume = client.volume(
+        source="hyperliquid",
+        market="SPX",
+        from_=start,
+        to=end,
+        interval="1h",
+    )
+
+print(volume[0])
+```
+
+## Query VWAP series
+
+Use `vwap(...)` for execution benchmarking and price smoothing.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    vwap = client.vwap(
+        source="hyperliquid",
+        market="SPX",
+        from_=start,
+        to=end,
+        interval="1h",
+    )
+
+print(vwap[0])
+```
+
+## Query volatility series
+
+Use `volatility(...)` for risk modeling and intraperiod volatility analysis.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(hours=6)
+
+with PolarisClient() as client:
+    volatility = client.volatility(
+        source="hyperliquid",
+        market="SPX",
+        from_=start,
+        to=end,
+        interval="1h",
+    )
+
+print(volatility[0])
+```
+
+## Query best bid/offer
+
+Use `bbo(...)` for spread tracking, quote analytics, and top-of-book monitoring.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(minutes=30)
+
+with PolarisClient() as client:
+    bbo_quotes = client.bbo(
+        source="binance",
+        market="BTC-USDT",
+        from_=start,
+        to=end,
+    )
+
+print(bbo_quotes[0])
+```
+
+## Query depth metrics
+
+Use `depth_metrics(...)` for liquidity analysis and market impact estimation.
+
+```python
+from datetime import datetime, timedelta, timezone
+
+from polaris_data import PolarisClient
+
+end = datetime.now(timezone.utc)
+start = end - timedelta(minutes=30)
+
+with PolarisClient() as client:
+    depth_metrics = client.depth_metrics(
+        source="binance",
+        market="BTC-USDT",
+        from_=start,
+        to=end,
+        depth_pct=0.01,
+        slippage_notional=10000.0,
+    )
+
+print(depth_metrics[0])
+```
 
 ## Local dataset storage
 
