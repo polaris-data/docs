@@ -32,9 +32,9 @@ Start with `Trades`, `Events`, or `OHLCV` when you already know the market and n
 
 ## SDKs
 
-- [Python SDK](https://docs.polaris.supply/sdks/python.md): Python client for market discovery, snapshots, replay, trades, events, and OHLCV.
-- [TypeScript SDK](https://docs.polaris.supply/sdks/typescript.md): TypeScript client for market discovery, snapshots, replay, trades, events, and OHLCV.
-- [Rust SDK](https://docs.polaris.supply/sdks/rust.md): Rust client setup and authentication.
+- [Python SDK](https://docs.polaris.supply/sdks/python.md): Python client for market discovery, snapshots, replay, trades, events, OHLCV, order book snapshots, funding rates, mark prices, volume profiles, VWAP, volatility, best bid/offer, and depth metrics.
+- [TypeScript SDK](https://docs.polaris.supply/sdks/typescript.md): TypeScript client for market discovery, snapshots, replay, trades, events, OHLCV, order book snapshots, funding rates, mark prices, volume profiles, VWAP, volatility, best bid/offer, and depth metrics.
+- [Rust SDK](https://docs.polaris.supply/sdks/rust.md): Rust client for market discovery, snapshots, replay, trades, events, OHLCV, order book snapshots, funding rates, mark prices, volume profiles, VWAP, volatility, best bid/offer, and depth metrics.
 
 ## Query patterns
 

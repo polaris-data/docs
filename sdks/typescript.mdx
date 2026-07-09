@@ -84,6 +84,15 @@ Use `PolarisClient` for discovery, historical replay, and direct query workflows
 | `trades(params)` | List of normalized trades | Analyze executions |
 | `raw(params)` | List of raw payloads | Inspect venue-native messages |
 | `ohlcv(params)` | List of bars or TradingView-style JSON | Plot fast market charts |
+| `l2Snapshots(params)` | List of orderbook snapshot rows | Order book reconstruction and microstructure analysis |
+| `fundingRates(params)` | List of funding-rate point series rows | Perpetual funding studies and carry modeling |
+| `markPrices(params)` | List of mark-price point series rows | Basis analysis, mark tracking, and liquidation-related research |
+| `ohlcvTradingView(params)` | TradingView-shaped OHLCV payload | Feeding TradingView-compatible chart consumers directly |
+| `volume(params)` | Bucketed trade volume series | Volume profiling and participation analysis |
+| `vwap(params)` | Bucketed VWAP series | Execution benchmarking and price smoothing |
+| `volatility(params)` | Bucketed realized volatility series | Risk modeling and intraperiod volatility analysis |
+| `bbo(params)` | Best bid/offer quote series | Spread tracking, quote analytics, and top-of-book monitoring |
+| `depthMetrics(params)` | Derived depth, spread, imbalance, and slippage metrics | Liquidity analysis and market impact estimation |
 
 `from` and `to` accept ISO 8601 strings, `Date` objects, or Unix epoch microseconds (number).
 
@@ -171,6 +180,187 @@ console.log(bars[0]);
 If you pass `format: "tradingview"`, `ohlcv(...)` returns TradingView-style candle and volume arrays.
 
 The OHLCV aggregation engine preserves precision by scaling volume by `1e12` during accumulation to avoid floating-point drift.
+
+## Query order book snapshots
+
+Use `l2Snapshots(...)` when you need order book depth data for microstructure analysis.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 5 * 60_000); // 5 minutes ago
+
+await using client = new PolarisClient();
+
+const snapshots = await client.l2Snapshots({
+  source: "binance",
+  market: "BTC-USDT",
+  from: start,
+  to: end,
+});
+
+console.log(snapshots[0]);
+```
+
+## Query funding rates
+
+Use `fundingRates(...)` to analyze perpetual funding rates and carry modeling.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 24 * 3600_000); // 24 hours ago
+
+await using client = new PolarisClient();
+
+const fundingRates = await client.fundingRates({
+  source: "hyperliquid",
+  market: "BTC",
+  from: start,
+  to: end,
+});
+
+console.log(fundingRates[0]);
+```
+
+## Query mark prices
+
+Use `markPrices(...)` for basis analysis, mark tracking, and liquidation-related research.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 24 * 3600_000); // 24 hours ago
+
+await using client = new PolarisClient();
+
+const markPrices = await client.markPrices({
+  source: "hyperliquid",
+  market: "BTC",
+  from: start,
+  to: end,
+});
+
+console.log(markPrices[0]);
+```
+
+## Query volume profiles
+
+Use `volume(...)` for volume profiling and participation analysis.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 6 * 3600_000); // 6 hours ago
+
+await using client = new PolarisClient();
+
+const volume = await client.volume({
+  source: "hyperliquid",
+  market: "SPX",
+  from: start,
+  to: end,
+  interval: "1h",
+});
+
+console.log(volume[0]);
+```
+
+## Query VWAP series
+
+Use `vwap(...)` for execution benchmarking and price smoothing.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 6 * 3600_000); // 6 hours ago
+
+await using client = new PolarisClient();
+
+const vwap = await client.vwap({
+  source: "hyperliquid",
+  market: "SPX",
+  from: start,
+  to: end,
+  interval: "1h",
+});
+
+console.log(vwap[0]);
+```
+
+## Query volatility series
+
+Use `volatility(...)` for risk modeling and intraperiod volatility analysis.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 6 * 3600_000); // 6 hours ago
+
+await using client = new PolarisClient();
+
+const volatility = await client.volatility({
+  source: "hyperliquid",
+  market: "SPX",
+  from: start,
+  to: end,
+  interval: "1h",
+});
+
+console.log(volatility[0]);
+```
+
+## Query best bid/offer
+
+Use `bbo(...)` for spread tracking, quote analytics, and top-of-book monitoring.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 30 * 60_000); // 30 minutes ago
+
+await using client = new PolarisClient();
+
+const bboQuotes = await client.bbo({
+  source: "binance",
+  market: "BTC-USDT",
+  from: start,
+  to: end,
+});
+
+console.log(bboQuotes[0]);
+```
+
+## Query depth metrics
+
+Use `depthMetrics(...)` for liquidity analysis and market impact estimation.
+
+```typescript
+import { PolarisClient } from "polaris-data";
+
+const end = new Date();
+const start = new Date(end.getTime() - 30 * 60_000); // 30 minutes ago
+
+await using client = new PolarisClient();
+
+const depthMetrics = await client.depthMetrics({
+  source: "binance",
+  market: "BTC-USDT",
+  from: start,
+  to: end,
+  depthPct: 0.01,
+  slippageNotional: 10000.0,
+});
+
+console.log(depthMetrics[0]);
+```
 
 ## Local dataset storage
 

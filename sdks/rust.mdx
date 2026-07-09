@@ -107,6 +107,14 @@ Use `PolarisClient` for discovery and snapshot-backed historical queries.
 | `events(HistoricalQuery)` | `Vec<StandardEvent>` | Load mixed event types into async jobs |
 | `trades(HistoricalQuery)` | `Vec<TradeEvent>` | Analyze executions |
 | `ohlcv(OhlcvQuery)` | `OhlcvOutput` | Build bars or TradingView-style output |
+| `l2_snapshots(HistoricalQuery)` | `Vec<OrderbookEvent>` | Order book reconstruction and microstructure analysis |
+| `funding_rates(HistoricalQuery)` | `Vec<PointSeriesEvent>` | Perpetual funding studies and carry modeling |
+| `mark_prices(HistoricalQuery)` | `Vec<PointSeriesEvent>` | Basis analysis, mark tracking, and liquidation-related research |
+| `volume(OhlcvQuery)` | `Vec<VolumeBar>` | Bucketed trade volume series for volume profiling and participation analysis |
+| `vwap(OhlcvQuery)` | `Vec<VwapBar>` | Bucketed VWAP series for execution benchmarking and price smoothing |
+| `volatility(OhlcvQuery)` | `Vec<VolatilityBar>` | Bucketed realized volatility series for risk modeling and intraperiod volatility analysis |
+| `bbo(HistoricalQuery)` | `Vec<BboQuote>` | Best bid/offer quote series for spread tracking, quote analytics, and top-of-book monitoring |
+| `depth_metrics(HistoricalQuery, depth_pct, slippage_notional)` | `Vec<DepthMetricsRow>` | Derived depth, spread, imbalance, and slippage metrics for liquidity analysis and market impact estimation |
 
 `from` and `to` accept ISO 8601 strings, `chrono::DateTime<Utc>`, or Unix epoch microseconds as `i64` or `u64`. If you omit one or both bounds, the SDK infers a bounded historical range from catalog metadata, using the latest 7 days by default and applying public cutoff rules for preview datasets when no API key is present.
 
@@ -222,6 +230,221 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 Supported intervals are `100ms`, `1s`, `10s`, `1m`, `5m`, `15m`, and `1h`.
+
+## Query order book snapshots
+
+Use `l2_snapshots(...)` when you need order book depth data for microstructure analysis.
+
+```rust
+use polaris_data::{HistoricalQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let snapshots = client
+        .l2_snapshots(HistoricalQuery {
+            source: "binance".into(),
+            market: "BTC-USDT".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-01T00:05:00Z".into()),
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", snapshots.first());
+    Ok(())
+}
+```
+
+## Query funding rates
+
+Use `funding_rates(...)` to analyze perpetual funding rates and carry modeling.
+
+```rust
+use polaris_data::{HistoricalQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let funding_rates = client
+        .funding_rates(HistoricalQuery {
+            source: "hyperliquid".into(),
+            market: "BTC".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-02T00:00:00Z".into()),
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", funding_rates.first());
+    Ok(())
+}
+```
+
+## Query mark prices
+
+Use `mark_prices(...)` for basis analysis, mark tracking, and liquidation-related research.
+
+```rust
+use polaris_data::{HistoricalQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let mark_prices = client
+        .mark_prices(HistoricalQuery {
+            source: "hyperliquid".into(),
+            market: "BTC".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-02T00:00:00Z".into()),
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", mark_prices.first());
+    Ok(())
+}
+```
+
+## Query volume profiles
+
+Use `volume(...)` for volume profiling and participation analysis.
+
+```rust
+use polaris_data::{OhlcvInterval, OhlcvQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let volume = client
+        .volume(OhlcvQuery {
+            source: "hyperliquid".into(),
+            market: "SPX".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-01T06:00:00Z".into()),
+            interval: OhlcvInterval::H1,
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", volume.first());
+    Ok(())
+}
+```
+
+## Query VWAP series
+
+Use `vwap(...)` for execution benchmarking and price smoothing.
+
+```rust
+use polaris_data::{OhlcvInterval, OhlcvQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let vwap = client
+        .vwap(OhlcvQuery {
+            source: "hyperliquid".into(),
+            market: "SPX".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-01T06:00:00Z".into()),
+            interval: OhlcvInterval::H1,
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", vwap.first());
+    Ok(())
+}
+```
+
+## Query volatility series
+
+Use `volatility(...)` for risk modeling and intraperiod volatility analysis.
+
+```rust
+use polaris_data::{OhlcvInterval, OhlcvQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let volatility = client
+        .volatility(OhlcvQuery {
+            source: "hyperliquid".into(),
+            market: "SPX".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-01T06:00:00Z".into()),
+            interval: OhlcvInterval::H1,
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", volatility.first());
+    Ok(())
+}
+```
+
+## Query best bid/offer
+
+Use `bbo(...)` for spread tracking, quote analytics, and top-of-book monitoring.
+
+```rust
+use polaris_data::{HistoricalQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let bbo_quotes = client
+        .bbo(HistoricalQuery {
+            source: "binance".into(),
+            market: "BTC-USDT".into(),
+            from: Some("2024-01-01T00:00:00Z".into()),
+            to: Some("2024-01-01T00:30:00Z".into()),
+            allow_gaps: false,
+        })
+        .await?;
+
+    println!("{:?}", bbo_quotes.first());
+    Ok(())
+}
+```
+
+## Query depth metrics
+
+Use `depth_metrics(...)` for liquidity analysis and market impact estimation.
+
+```rust
+use polaris_data::{HistoricalQuery, PolarisClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = PolarisClient::builder().build()?;
+
+    let depth_metrics = client
+        .depth_metrics(
+            HistoricalQuery {
+                source: "binance".into(),
+                market: "BTC-USDT".into(),
+                from: Some("2024-01-01T00:00:00Z".into()),
+                to: Some("2024-01-01T00:30:00Z".into()),
+                allow_gaps: false,
+            },
+            0.01,    // depth_pct
+            10000.0, // slippage_notional
+        )
+        .await?;
+
+    println!("{:?}", depth_metrics.first());
+    Ok(())
+}
+```
 
 ## Local dataset storage
 
