@@ -24,9 +24,9 @@ All examples use `https://api.polaris.supply`.
 
 ## `GET /catalog`
 
-Returns flattened market coverage rows with per-market UTC bounds, dataset categories, and access metadata.
+Returns flattened market coverage rows with per-market UTC bounds, dataset categories, access metadata, and normalized instrument metadata.
 
-- Optional: `source`, `market`
+- Optional: `source`, `market`, `q`
 - `market` requires `source`
 
 ## Parameters
@@ -37,6 +37,10 @@ Returns flattened market coverage rows with per-market UTC bounds, dataset categ
 
 <ParamField query="market" type="string">
   Exact market identifier to filter within the selected source. Requires `source`.
+</ParamField>
+
+<ParamField query="q" type="string">
+  Optional free-text filter across catalog rows. Useful when you know part of a venue market name or symbol but not the exact Polaris market ID.
 </ParamField>
 
 ## Response fields
@@ -61,10 +65,6 @@ Returns flattened market coverage rows with per-market UTC bounds, dataset categ
   Latest available UTC timestamp for the market.
 </ResponseField>
 
-<ResponseField name="markets.source_type" type="string" required>
-  Metadata source for the market entry, such as `manifest`.
-</ResponseField>
-
 <ResponseField name="markets.categories" type="string[]" required>
   Dataset categories available for the market.
 </ResponseField>
@@ -77,6 +77,30 @@ Returns flattened market coverage rows with per-market UTC bounds, dataset categ
   Latest UTC date available without gated access when a public cutoff exists.
 </ResponseField>
 
+<ResponseField name="markets.instrument" type="object" required>
+  Normalized instrument metadata for the market row. The object is always present, and missing values are returned as `null`.
+</ResponseField>
+
+<ResponseField name="markets.instrument.base" type="string">
+  Base asset or instrument code when available, such as `BTC`.
+</ResponseField>
+
+<ResponseField name="markets.instrument.quote" type="string">
+  Quote asset or settlement code when available, such as `USD`.
+</ResponseField>
+
+<ResponseField name="markets.instrument.tick_size" type="string | number">
+  Minimum price increment when available. Numeric values may be returned as strings or numbers depending on source normalization.
+</ResponseField>
+
+<ResponseField name="markets.instrument.lot_size" type="string | number">
+  Minimum quantity increment when available. Numeric values may be returned as strings or numbers depending on source normalization.
+</ResponseField>
+
+<ResponseField name="markets.instrument.min_notional" type="string | number">
+  Minimum notional trade size when available. Numeric values may be returned as strings or numbers depending on source normalization.
+</ResponseField>
+
 <ResponseField name="updatedAt" type="string" required>
   UTC timestamp for the catalog snapshot.
 </ResponseField>
@@ -84,7 +108,7 @@ Returns flattened market coverage rows with per-market UTC bounds, dataset categ
 Example:
 
 ```bash
-curl "https://api.polaris.supply/catalog?source=derive&market=SOL-USD"
+curl "https://api.polaris.supply/catalog?source=hyperliquid&market=BTC-USD"
 ```
 
 Response shape:
@@ -98,16 +122,24 @@ Response shape:
       "market": "BTC-USD",
       "start": "2026-05-01T00:15:00.000Z",
       "end": "2026-05-07T23:45:00.000Z",
-      "source_type": "manifest",
-      "categories": ["perp"],
+      "categories": ["perp", "crypto"],
       "access": {
         "status": "open",
         "public_cutoff_date": null
+      },
+      "instrument": {
+        "base": "BTC",
+        "quote": "USD",
+        "tick_size": "0.1",
+        "lot_size": "0.001",
+        "min_notional": "10"
       }
     }
   ]
 }
 ```
+
+When Polaris does not have instrument metadata for a market, the `instrument` object is still present and its fields are set to `null`.
 
 ## When to use catalog
 
