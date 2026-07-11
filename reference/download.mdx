@@ -1,15 +1,12 @@
 ---
 title: "Download"
 sidebarTitle: "Download"
-description: "Get bulk download URLs for a UTC date, or fetch a single snapshot file by key."
+description: "Get bulk download URLs for a UTC date."
 api: "GET /download"
 authMethod: "none"
 ---
 
-Use `GET /download` in one of two ways:
-
-- Preferred: request a daily bulk manifest with `source`, `market`, `date`, and `mode=json` to get all snapshot download URLs for that UTC date in one response.
-- Single-file: request a specific snapshot by `key` when you already know the exact file you want.
+Use `GET /download` to request a daily bulk manifest with `source`, `market`, and `date` and get all snapshot download URLs for that UTC date in one response.
 
 Open datasets do not require an `Authorization` header. Bearer auth or machine payment is only required when the dataset access policy for the requested data requires it.
 
@@ -20,18 +17,13 @@ Open datasets do not require an `Authorization` header. Bearer auth or machine p
 ## Preferred workflow
 
 1. Use [Catalog](/reference/catalog) to confirm the exact `source` and `market`.
-2. Request `GET /download?source=...&market=...&date=...&mode=json`.
+2. Request `GET /download?source=...&market=...&date=...`.
 3. Read the manifest and download the returned snapshot URLs.
 4. Decompress each `.jsonl.zst` file locally and treat it as the canonical normalized event source.
 
-Use the `key` flow only when you want one known snapshot file instead of a full day manifest.
-
 ## Parameters
 
-Choose exactly one request shape:
-
-- Bulk manifest: `source`, `market`, `date`, `mode=json`
-- Single-file: `key`, optional `mode`
+Required query params: `source`, `market`, `date`
 
 <ParamField query="source" type="string">
   Source ID for the bulk manifest request.
@@ -45,21 +37,13 @@ Choose exactly one request shape:
   UTC date for the bulk manifest request, in strict `YYYY-MM-DD` format.
 </ParamField>
 
-<ParamField query="key" type="string">
-  Opaque snapshot key for a single-file request, such as `standard-hyperliquid-BTC-USD-2026-05-07-00` or `raw-hyperliquid-BTC-USD-2026-05-07-000000`.
-</ParamField>
-
-<ParamField query="mode" type="string">
-  Response mode. Bulk manifest requests require `mode=json`. Single-file requests default to `redirect`, which issues a `302` to the file; use `json` to receive a pre-signed URL instead.
-</ParamField>
-
 ## Bulk manifest behavior
 
-When you request `source`, `market`, and `date` without a `key`, Polaris returns a JSON manifest for that UTC date.
+When you request `source`, `market`, and `date`, Polaris returns a JSON manifest for that UTC date.
 
 - The endpoint uses canonical query params only. Use `source` and `market`, not legacy aliases such as `exchange` or `asset`.
 - The date must be `YYYY-MM-DD`.
-- Bulk manifest requests do not redirect to one file. They always return JSON and therefore require `mode=json`.
+- The endpoint returns JSON. It does not redirect to a single file.
 - Polaris groups available files by timestamp and returns one manifest entry per snapshot timestamp.
 - If a timestamp already has one standardized object, the returned URL points to that object directly.
 - If a timestamp has multiple standardized shards, Polaris assembles them into one temporary file before returning the URL.
@@ -116,7 +100,7 @@ Polaris first looks for standardized objects under `standard/{source}/{market}/{
 ## Bulk manifest example
 
 ```bash
-curl "https://api.polaris.supply/download?source=hyperliquid&market=BTC-USD&date=2026-07-10&mode=json"
+curl "https://api.polaris.supply/download?source=hyperliquid&market=BTC-USD&date=2026-07-10"
 ```
 
 ```json
@@ -138,69 +122,20 @@ curl "https://api.polaris.supply/download?source=hyperliquid&market=BTC-USD&date
 }
 ```
 
-## Single-file behavior
-
-Use the `key` flow when you already have a snapshot identifier from [Snapshots](/reference/snapshots) and want one file directly.
-
-- The endpoint auto-detects the snapshot type by key prefix.
-- `standard-...` keys return standardized `.jsonl.zst` snapshots.
-- `raw-...` keys return venue-native raw snapshot payloads.
-- Single-file requests default to `302` redirect mode.
-- Add `mode=json` if you want a JSON response with a pre-signed URL instead of following redirects.
-
-## Single-file response fields
-
-<ResponseField name="redirect" type="string">
-  Default single-file response mode. The endpoint issues a `302` redirect to the downloadable snapshot file.
-</ResponseField>
-
-<ResponseField name="url" type="string">
-  Pre-signed download URL when a single-file request uses `mode=json`.
-</ResponseField>
-
-<ResponseField name="expires_in_seconds" type="number">
-  Lifetime of the pre-signed URL, typically `86400` (24 hours).
-</ResponseField>
-
-The downloaded `.jsonl.zst` file contains standardized event records for standard keys, or venue-native payloads for raw keys.
-
-## Single-file example
-
-```bash
-curl -L \
-  "https://api.polaris.supply/download?key=standard-hyperliquid-BTC-USD-2026-05-07-00" \
-  -o hyperliquid_BTC-USD_2026-05-07_00.jsonl.zst
-```
-
-JSON mode example:
-
-```bash
-curl "https://api.polaris.supply/download?key=standard-hyperliquid-BTC-USD-2026-05-07-00&mode=json"
-```
-
-```json
-{
-  "url": "https://storage.polaris.supply/...",
-  "expires_in_seconds": 86400
-}
-```
-
 ## Access behavior
 
 - Open datasets do not require bearer auth.
 - Preview or restricted datasets may require bearer auth or a machine payment challenge, depending on dataset policy.
 - Bulk manifest access is evaluated against the requested dataset and date.
-- Raw single-file downloads remain policy-gated and typically require paid access.
 
 ## Error behavior
 
-- `400` for an invalid request shape, missing required params, invalid `date`, or unsupported `mode`
+- `400` for missing required params or an invalid `date`
 - `401` when bearer auth is required by dataset policy
 - `402` when the dataset requires payment and no auth or payment is provided
-- `403` for forbidden key prefixes
 - `404` when no matching snapshot data is found
 
 ## Next steps
 
 - Read [Catalog](/reference/catalog) to confirm valid `source` and `market` values.
-- Read [Snapshots](/reference/snapshots) if you want to inspect available files before requesting a bulk manifest or single snapshot.
+- Read [Snapshots](/reference/snapshots) if you want to inspect available files before requesting a bulk manifest.
