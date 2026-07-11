@@ -13,7 +13,7 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. Most endpoints 
 | Understand when you need a token and how bearer auth works | [Authentication](/guides/authentication) |
 | Discover valid sources, markets, and time bounds | [Catalog](/reference/catalog) |
 | List available snapshot files (standard or raw) | [Snapshots](/reference/snapshots) |
-| Download a snapshot file by key | [Download](/reference/download) |
+| Get bulk download URLs for a UTC date, or download a snapshot file by key | [Download](/reference/download) |
 
 ## Endpoint families
 
@@ -24,7 +24,7 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. Most endpoints 
 ### Historical files
 
 - `GET /snapshots` for public hourly snapshot listing. Add `raw=true` to list venue-native raw snapshot files (requires paid auth)
-- `GET /download` for public or policy-gated file download. Auto-detects standard vs raw by key prefix
+- `GET /download` for bulk daily download manifests or single-file download. Use `source`/`market`/`date` for the bulk JSON manifest, or `key` for one file
 
 ## Common response patterns
 
@@ -44,7 +44,7 @@ Polaris provides REST endpoints at `https://api.polaris.supply`. Most endpoints 
 }
 ```
 
-`/download` returns a `302` redirect by default, or JSON with `url` and `expires_in_seconds` when you request `mode=json`.
+`/download` supports two response shapes: a bulk daily manifest when you request `source`, `market`, `date`, and `mode=json`, or a single-file redirect / JSON URL response when you request `key`.
 
 ## Recommended reading order
 

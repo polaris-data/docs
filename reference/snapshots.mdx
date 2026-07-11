@@ -1,12 +1,12 @@
 ---
 title: "Snapshots"
 sidebarTitle: "Snapshots"
-description: "List and download canonical hourly snapshot files for historical ingestion."
+description: "List canonical hourly snapshot files and plan bulk historical ingestion."
 api: "GET /snapshots"
 authMethod: "none"
 ---
 
-Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
+Snapshots are the canonical index for standardized historical data. Use them to inspect available hourly artifacts, estimate byte volume, and decide which dates you want to fetch through the bulk `GET /download` manifest flow.
 
 `GET /snapshots` is a public listing endpoint. You do not need an `Authorization` header to browse available snapshot files. Add `raw=true` to list venue-native raw snapshot files instead — this requires paid auth.
 
@@ -14,8 +14,9 @@ Snapshots are the canonical bulk-ingestion path for standardized Polaris data.
 
 1. Use [Catalog](/reference/catalog) to choose a valid `source` and `market`.
 2. Call `GET /snapshots` to list hourly snapshot files.
-3. Call [Download](/reference/download) with a `key` from the listing to fetch one file.
-4. Decompress the `.jsonl.zst` file locally and treat it as the canonical normalized event source.
+3. Call [Download](/reference/download) with `source`, `market`, `date`, and `mode=json` to get all download URLs for a UTC date.
+4. Use `key`-based download only when you want one specific file instead of the day manifest.
+5. Decompress each `.jsonl.zst` file locally and treat it as the canonical normalized event source.
 
 ## `GET /snapshots`
 
@@ -117,7 +118,7 @@ Public endpoint for standardized hourly snapshot artifacts in `.jsonl.zst`.
 </ResponseField>
 
 <ResponseField name="snapshots.key" type="string" required>
-  Opaque snapshot identifier to pass to `GET /download`.
+  Opaque snapshot identifier for single-file `GET /download?key=...` requests when you need one file at a time.
 </ResponseField>
 
 ## Raw snapshots
@@ -194,5 +195,5 @@ After download, decompress the `.jsonl.zst` file locally and use it as the canon
 
 ## Next steps
 
-- Read [Download](/reference/download) to fetch a snapshot file by key.
+- Read [Download](/reference/download) to fetch a bulk day manifest or a single snapshot file.
 - Read [Trades](/sdks/trades) and [OHLCV](/sdks/ohlcv) if you plan to derive narrower views from normalized data.
