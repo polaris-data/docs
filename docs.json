@@ -57,17 +57,57 @@
       {
         "group": "Data Schemas",
         "pages": [
-          "sdks/events",
-          "sdks/trades",
-          "sdks/ohlcv",
-          "sdks/l2-snapshots",
-          "sdks/bbo",
-          "sdks/funding-rates",
-          "sdks/mark-prices",
-          "sdks/volume",
-          "sdks/vwap",
-          "sdks/volatility",
-          "sdks/depth-metrics"
+          {
+            "page": "sdks/events",
+            "schema": "/schemas/events.mdx"
+          },
+          {
+            "page": "sdks/trades",
+            "schema": "/schemas/trades.mdx"
+          },
+          {
+            "page": "sdks/ohlcv",
+            "label": "OHLCV",
+            "schema": "/schemas/ohlcv.mdx"
+          },
+          {
+            "page": "sdks/l2-snapshots",
+            "label": "L2 Snapshots",
+            "schema": "/schemas/l2-snapshots.mdx"
+          },
+          {
+            "page": "sdks/bbo",
+            "label": "BBO",
+            "schema": "/schemas/bbo.mdx"
+          },
+          {
+            "page": "sdks/funding-rates",
+            "label": "Funding Rates",
+            "schema": "/schemas/funding-rates.mdx"
+          },
+          {
+            "page": "sdks/mark-prices",
+            "label": "Mark Prices",
+            "schema": "/schemas/mark-prices.mdx"
+          },
+          {
+            "page": "sdks/volume",
+            "schema": "/schemas/volume.mdx"
+          },
+          {
+            "page": "sdks/vwap",
+            "label": "VWAP",
+            "schema": "/schemas/vwap.mdx"
+          },
+          {
+            "page": "sdks/volatility",
+            "schema": "/schemas/volatility.mdx"
+          },
+          {
+            "page": "sdks/depth-metrics",
+            "label": "Depth Metrics",
+            "schema": "/schemas/depth-metrics.mdx"
+          }
         ]
       },
       {
