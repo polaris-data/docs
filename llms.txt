@@ -48,7 +48,7 @@ Start with `Trades`, `Events`, or `OHLCV` when you already know the market and n
 - [API overview](https://docs.polaris.supply/reference/api-reference.md): Choose the right Polaris REST endpoint and navigate to focused reference pages.
 - [Catalog](https://docs.polaris.supply/reference/catalog.md): `GET /catalog` for market discovery, coverage, and bounds.
 - [Snapshots](https://docs.polaris.supply/reference/snapshots.md): `GET /snapshots` for historical file listing, including raw snapshot discovery notes.
-- [Download](https://docs.polaris.supply/reference/download.md): `GET /download` for file retrieval by snapshot key.
+- [Download](https://docs.polaris.supply/reference/download.md): `GET /download` for bulk file retrieval by `source`, `market`, and `date`.
 
 ## Resources
 
