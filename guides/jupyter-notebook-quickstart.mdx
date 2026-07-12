@@ -1,7 +1,7 @@
 ---
 title: "Example Notebooks"
 sidebarTitle: "Example Notebooks"
-description: "Start a Polaris notebook quickly, then explore curated example notebooks for single-market trade analysis and cross-venue tracking with polaris_data."
+description: "Start a Polaris notebook quickly, then explore a curated example notebook for single-market trade analysis with polaris_data."
 keywords:
   - Jupyter notebook
   - example notebooks
@@ -10,11 +10,9 @@ keywords:
   - pandas
   - matplotlib
   - Hyperliquid
-  - Dreamcash
-  - Tradexyz
 ---
 
-Use this page when you want a fast notebook setup and then a curated set of runnable `polaris-data` examples.
+Use this page when you want a fast notebook setup and then a curated runnable `polaris-data` example.
 
 The full notebook sources live in the [`polaris-data/notebooks`](https://github.com/polaris-data/notebooks) repository. Keep this docs page as the map, and use the repository when you want the full runnable analysis.
 
@@ -66,7 +64,6 @@ Use [Market Coverage](/markets/market-coverage) first when you need a high-level
 The current example repo is intentionally small and curated:
 
 - [`hyperliquid_btc_trade_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/hyperliquid_btc_trade_analysis.ipynb): single-market walkthrough for bars, trades, and trade-flow visualization
-- [`dreamcash_tradexyz_tracking_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/dreamcash_tradexyz_tracking_analysis.ipynb): cross-venue comparison notebook for shared tickers, overlap, spread, and trade activity
 
 ## Hyperliquid BTC trade analysis
 
@@ -112,46 +109,9 @@ trades_df = pd.json_normalize(trades)
 
 Use this notebook when you want to understand the core `polaris-data` workflow quickly without adding multi-market logic.
 
-## Dreamcash and Tradexyz tracking analysis
-
-Open [`dreamcash_tradexyz_tracking_analysis.ipynb`](https://github.com/polaris-data/notebooks/blob/main/notebooks/dreamcash_tradexyz_tracking_analysis.ipynb) when you want a broader example that compares the same ticker universe across two venues.
-
-This notebook shows how to:
-
-- discover the shared market universe across `dreamcash` and `tradexyz`
-- normalize venue-specific market IDs into a common ticker map
-- fetch parallel OHLCV series across multiple tickers
-- compare activity, overlap, returns, and close-price spread behavior
-- drill into trade-level detail for a focus ticker
-
-Short excerpt:
-
-```python
-from polaris_data import PolarisClient
-import pandas as pd
-
-source_a = "dreamcash"
-source_b = "tradexyz"
-selected_tickers = ["GOLD", "NVDA", "AMZN", "TSLA", "MSFT"]
-
-with PolarisClient() as client:
-    catalog = client.catalog()
-
-catalog_markets = pd.DataFrame(catalog["markets"])
-catalog_markets = catalog_markets[catalog_markets["source"].isin([source_a, source_b])].copy()
-
-shared_market_map = {}
-for _, market in catalog_markets.iterrows():
-    ticker = market["market"].replace("CASH:", "").replace("XYZ:", "")
-    shared_market_map.setdefault(ticker, {})[market["source"]] = market["market"]
-```
-
-Use this notebook when you want to show how Polaris helps compare the same symbols across venues instead of staying within one market.
-
 ## Choosing the right notebook
 
 - Start with the Hyperliquid example if you want the fastest path to understanding `catalog(...)`, `ohlcv(...)`, and `trades(...)`.
-- Start with the Dreamcash and Tradexyz example if you want a richer research workflow with shared-universe discovery and cross-venue comparison.
 - Stay in the docs and read [Python SDK](/sdks/python) if you want method signatures and usage patterns before opening a notebook.
 
 ## Next steps
