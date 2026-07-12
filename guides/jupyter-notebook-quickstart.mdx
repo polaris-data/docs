@@ -85,22 +85,16 @@ import pandas as pd
 
 source = "hyperliquid"
 market = "BTC"
-start = "2026-06-29T19:00:00Z"
-end = "2026-06-29T20:00:00Z"
 
 with PolarisClient() as client:
     bars = client.ohlcv(
         source=source,
         market=market,
         interval="1m",
-        from_=start,
-        to=end,
     )
     trades = client.trades(
         source=source,
         market=market,
-        from_=start,
-        to=end,
     )
 
 bars_df = pd.DataFrame(bars)
